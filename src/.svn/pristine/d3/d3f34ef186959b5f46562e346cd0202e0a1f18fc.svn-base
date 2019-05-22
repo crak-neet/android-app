@@ -1,0 +1,51 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert,AsyncStorage } from 'react-native';
+export function OtpVerificationAction(Token, OtpValue) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "Otpvalue":OtpValue,
+            }),
+            method: 'post',
+            url: 'user/otpverification'
+        }).then((JsonResponse) => {
+            // console.error(JsonResponse)
+            if (JsonResponse.ResultStatus == "true") {
+
+                AsyncStorage.setItem('Token', JsonResponse.Token, () => {
+                });
+                AsyncStorage.setItem('Temp_token', "", () => {
+                });
+
+                 dispatch(getServiceSuccess())
+            } else {
+                dispatch(getServiceFailure())
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onOtpVerify',
+    }
+}
+export function getServiceSuccess() {
+    return {
+        type: 'onOtpVerify_SUCCESS',
+        
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onOtpVerify_FAILURE',
+    }
+}

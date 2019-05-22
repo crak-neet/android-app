@@ -1,0 +1,51 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function ImageQuestionAction(Token, QuestionImageId) {
+
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "QuestionImageId": QuestionImageId
+            }),
+            method: 'post',
+            url: 'question/questionimage'
+        }).then((JsonResponse) => {
+            // console.error(JsonResponse)
+            if (JsonResponse.ResultStatus == "true") {
+                var questionImage = JsonResponse.result
+                dispatch(getServiceSuccess(questionImage))
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+
+
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'questionImage',
+
+    }
+}
+export function getServiceSuccess(questionImage) {
+    return {
+        type: 'questionImage_SUCCESS',
+        questionImage
+
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'questionImage_FAILURE',
+    }
+}

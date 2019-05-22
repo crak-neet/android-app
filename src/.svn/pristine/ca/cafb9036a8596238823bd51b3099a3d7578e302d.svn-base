@@ -1,0 +1,62 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+
+export function AllCancelTest_Action(Token, TestDetailId) {
+
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "TestDetailId": TestDetailId,
+
+            }),
+            method: 'post',
+            url: 'question/canceltest'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                dispatch(getServiceSuccess())
+
+            }else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'AllCancelTest_Action',
+    }
+}
+export function getServiceSuccess() {
+    return {
+        type: 'AllCancelTest_Action_SUCCESS',
+
+
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'AllCancelTest_Action_FAILURE',
+    }
+}

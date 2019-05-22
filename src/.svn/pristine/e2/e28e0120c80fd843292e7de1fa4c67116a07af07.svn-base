@@ -1,0 +1,43 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TouchableOpacity,
+    Image
+} from 'react-native'
+import { LinearGradient } from './NpmList';
+import { wp, hp } from './ResponsiveScreen'
+import { fontSize, color, fontFamily, } from '../NeetStyles/fontsAndColors';
+import {isIOS} from './index'
+
+export class Header_Drawer extends Component {
+
+    constructor(props) {
+        super(props);
+
+    }
+    render() {
+
+        return (
+            <View style={{ height: (isIOS) ? hp("10%") : hp('8%'), backgroundColor: color.appGreen, flexDirection: 'row', justifyContent: 'center' }}>
+                <TouchableOpacity  onPress={() => this.props.onPressLeftIcon()} style={{ flex: 0.15, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image source={require('./../Icons/menu.png')} style={{ height: wp('7.5%'), width: wp('7.5%'), tintColor: color.white }} />
+                </TouchableOpacity>
+                <View style={{ flex: 0.70, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: fontSize.Medium, color: color.white, fontFamily: fontFamily.OpenSansSemiBold }}>{this.props.HeaderText}</Text>
+                </View>
+                <TouchableOpacity onPress={() => this.props.onPressRightIcon()} style={{ flex: 0.15, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image source={require('./../Icons/musical-bell-outline.png')} style={{ height: wp('6.5%'), width: wp('6.5%'), tintColor: color.white }} />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+};
+
+
+
+
+
+
+
+

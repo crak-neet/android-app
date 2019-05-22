@@ -1,0 +1,189 @@
+const initialState = {
+  isFetching: false,
+  error: false,
+  testDetail: '',
+  notificationDetail: [],
+  studentInfo: '',
+  fatherInfo: '',
+  motherInfo: '',
+  //-----------Pincode Details---------//
+  PincodeFetchDetails: '',
+
+  // --chapter wise test dropdown list
+  chapterList: [],
+  // --Subject Wise test module
+  subjectList: [],
+  //---Assesment Wise Test Module ----///
+  assesmentList: [],
+
+  // --Special test list dropdown
+  specialTestList: []
+
+};
+
+export default function NeetReducer(state = initialState, action) {
+  switch (action.type) {
+
+    // ----------------------------------- Student Registration and Login ----------------------------------------//
+    case "onLoginAction":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onLoginAction_SUCCESS":
+      return {
+        ...state,
+
+      };
+    case "onLoginAction_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ----------------------------------- Student Registration Pincode Fetch Details----------------------------------------//
+    case "onPincodeDetails":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onPincodeDetails_SUCCESS":
+      return {
+        ...state,
+        PincodeFetchDetails: action.PincodeFetchDetails
+      };
+    case "onPincodeDetails_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Dashboard Student Test Details--------------------------------------- 
+    case "testDetailDashboard":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "testDetailDashboard_SUCCESS":
+      return {
+        ...state,
+        notificationDetail: action.notificationDetail
+      };
+    case "testDetailDashboard_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Notification Details--------------------------------------- 
+    case "notificationDetail":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "notificationDetail_SUCCESS":
+      return {
+        ...state,
+        notificationDetail: action.notificationDetail
+
+      };
+    case "notificationDetail_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Profile Details--------------------------------------- 
+    case "profileDetail":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "profileDetail_SUCCESS":
+      return {
+        ...state,
+        studentInfo: action.studentInfo,
+        fatherInfo: action.fatherInfo,
+        motherInfo: action.motherInfo
+      };
+    case "profileDetail_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+
+    // ---------------------------------------------chapter wise test modules--------------------------------------- 
+    case "chaptersLists":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "chaptersLists_SUCCESS":
+      return {
+        ...state,
+        chapterList: action.chapterList,
+      };
+    case "chaptersLists_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Subject wise test modules--------------------------------------- 
+    case "subjectDropdown":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "subjectDropdown_SUCCESS":
+      return {
+        ...state,
+        subjectList: action.subjectList,
+      };
+    case "subjectDropdown_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Assesment wise test modules--------------------------------------- 
+    case "assesmentLists":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "assesmentLists_SUCCESS":
+      return {
+        ...state,
+        assesmentList: action.assesmentList,
+      };
+    case "assesmentLists_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+      // -------------------------------Special test module----------------------------------------------------------
+      
+    case "specialTestLists":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "specialTestLists_SUCCESS":
+      return {
+        ...state,
+        specialTestList: action.specialTestList,
+      };
+    case "specialTestLists_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+
+    default:
+      return state;
+  }
+}

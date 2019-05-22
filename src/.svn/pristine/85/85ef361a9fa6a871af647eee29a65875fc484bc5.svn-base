@@ -1,0 +1,312 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TouchableOpacity,
+    Keyboard,
+    Image,
+    ScrollView,
+    AsyncStorage,
+    FlatList,
+
+} from 'react-native';
+
+
+import { fontSize, color, fontFamily, width, height } from '../../Asset/NeetStyles/fontsAndColors';
+import Button from '../../Asset/Libraries/Button';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, moment, ModalPicker, connect, DateTimePicker } from '../../Asset/Libraries/NpmList';
+import { Header_Only_Drawer } from '../../Asset/Libraries/index'
+
+import { Report_NEETTestAction } from './../../Redux/Actions/Report_NEETTestAction';
+import { AllSummaryReportAction } from './../../Redux/Actions/AllSummaryReportAction';
+
+
+class NEETModelTest_Reports extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            onReportResultView: false,
+            isDateTimePickerVisible: false,
+            isToDateTimePickerVisible: false,
+            FromDate: '',
+            ToDate: '',
+            subjectId: '',
+            chapterId: '',
+            chapterNameVisble: false,
+            onSelectReportColor: -1,
+            Summary_ID: "",
+            token: '',
+            ToDate_Maximum: 0
+
+        }
+
+        this.onSubmit = debounce(this.onSubmit.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+        this.onViewSummary = debounce(this.onViewSummary.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.setState({
+                    token: Token
+                })
+            }
+        })
+    }
+
+
+    onSubmit() {
+        if (this.state.FromDate == "") {
+            Snackbar.show({
+                title: "From Date is Required",
+                duration: Snackbar.LENGTH_SHORT
+            });
+        } else if (this.state.ToDate == "") {
+            Snackbar.show({
+                title: "To Date is Required",
+                duration: Snackbar.LENGTH_SHORT
+            });
+        } else {
+            this.props.Report_NEETTestAction(this.state.token, this.state.FromDate, this.state.ToDate)
+            this.setState({ onReportResultView: true })
+        }
+
+
+    }
+
+    onViewSummary() {
+
+        // TypeId =>1 Chapter
+        // TypeId =>2 Subject
+        // TypeId =>3 Assessment
+        // TypeId =>4 Neet
+        // TypeId =>5 Special 
+
+
+        this.props.AllSummaryReportAction(this.state.token, this.state.Summary_ID, "4")
+
+    }
+
+    onSelectReport(index) {
+        if (this.state.onSelectReportColor == index) {
+            this.setState({ onSelectReportColor: index, })
+        } else {
+            this.setState({ onSelectReportColor: index })
+        }
+
+        this.setState({ Summary_ID: index })
+    }
+
+
+    //-----------------------------Date Picker----------------------
+    _showDateTimePicker() { this.setState({ isDateTimePickerVisible: true }); }
+    _showToDateTimePicker() { this.setState({ isToDateTimePickerVisible: true }); }
+
+    _hideDateTimePicker = () => this.setState({
+        isDateTimePickerVisible: false,
+        isToDateTimePickerVisible: false,
+    });
+
+    _handleFromDatePicked = (fromDate) => {
+        this.setState({ ToDate_Maximum: fromDate })
+        this.setState({ FromDate: moment(fromDate).format('YYYY-MM-DD') })
+        this._hideDateTimePicker();
+    };
+    _handleToDatePicked = (ToDate) => {
+        this.setState({ ToDate: moment(ToDate).format('YYYY-MM-DD') })
+        this.setState({ isToDateTimePickerVisible: false });
+    };
+    _VAlidationToDateTimePicker() {
+        Snackbar.show({
+            title: "From Date is Required",
+            duration: Snackbar.LENGTH_SHORT
+        });
+    }
+    render() {
+
+        const { NEET_ReportDetail } = this.props.NeetReducer
+
+        return (
+
+            <View style={{ flex: 1, backgroundColor: color.white, }}>
+
+                <Header_Only_Drawer onPressLeftIcon={() => this.props.navigation.navigate('DrawerOpen')} HeaderText='NEET Test Reports' />
+                <View style={{ height: hp("5%") }} />
+                <View style={{ height: hp('20%'), justifyContent: 'center', marginLeft: wp('5%'), marginRight: wp('5%'), marginTop: hp('2%'), borderRadius: wp('3%'), borderColor: color.lightGray, borderWidth: hp('0.15%'), }}>
+                    <View style={{ height: hp('7%'), flexDirection: 'row', justifyContent: 'center', marginLeft: wp('5%'), marginRight: wp('5%'), }}>
+                        <TouchableOpacity onPress={() => this._showDateTimePicker()} style={{ flex: 4.6, flexDirection: 'row', justifyContent: 'center', borderBottomColor: color.lightGray, borderBottomWidth: hp('0.1%') }}>
+                            <View style={{ flex: 0.8, justifyContent: 'center' }}>
+                                <Text style={{ color: this.state.FromDate == "" ? color.lightGray : color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular, backgroundColor: 'transparent', }}>{this.state.FromDate == "" ? "From Date" : this.state.FromDate}</Text>
+                                <DateTimePicker
+                                    mode='date'
+                                    //for one day -> 86400000 , 6570 -> 18 yrs
+                                    maximumDate={new Date}
+                                    //for one day -> 86400000 , 36525 -> 100 yrs
+                                    // minimumDate={new Date(new Date().getTime() - (86400000 * 36525))}
+                                    isVisible={this.state.isDateTimePickerVisible}
+                                    onConfirm={this._handleFromDatePicked}
+                                    onCancel={this._hideDateTimePicker}
+                                />
+                            </View>
+                            <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} ></Image>
+                            </View>
+                        </TouchableOpacity>
+                        <View style={{ flex: 0.8, justifyContent: 'center' }}></View>
+                        {
+                            this.state.FromDate == "" ?
+
+                                <TouchableOpacity onPress={() => this._VAlidationToDateTimePicker()} style={{ flex: 4.6, flexDirection: 'row', justifyContent: 'center', borderBottomColor: color.lightGray, borderBottomWidth: hp('0.1%') }}>
+                                    <View style={{ flex: 0.8, justifyContent: 'center' }}>
+                                        <Text style={{ color: this.state.ToDate == "" ? color.lightGray : color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular, backgroundColor: 'transparent', }}>{this.state.ToDate == "" ? "To Date" : this.state.ToDate}</Text>
+                                        <DateTimePicker
+                                            //for one day -> 86400000 , 6570 -> 18 yrs
+                                            maximumDate={this.state.ToDate_Maximum}
+                                            //for one day -> 86400000 , 36525 -> 100 yrs
+                                            // minimumDate={new Date(new Date().getTime() - (86400000 * 36525))}
+                                            isVisible={this.state.isToDateTimePickerVisible}
+                                            onConfirm={this._handleToDatePicked}
+                                            onCancel={this._hideDateTimePicker}
+                                        />
+                                    </View>
+                                    <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                        <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} ></Image>
+                                    </View>
+                                </TouchableOpacity>
+                                :
+                                <TouchableOpacity onPress={() => this._showToDateTimePicker()} style={{ flex: 4.6, flexDirection: 'row', justifyContent: 'center', borderBottomColor: color.lightGray, borderBottomWidth: hp('0.1%') }}>
+                                    <View style={{ flex: 0.8, justifyContent: 'center' }}>
+                                        <Text style={{ color: this.state.ToDate == "" ? color.lightGray : color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular, backgroundColor: 'transparent', }}>{this.state.ToDate == "" ? "To Date" : this.state.ToDate}</Text>
+                                        <DateTimePicker
+                                            //for one day -> 86400000 , 6570 -> 18 yrs
+                                            // maximumDate={this.state.ToDate_Maximum}
+                                            minimumDate={this.state.ToDate_Maximum}
+                                            //for one day -> 86400000 , 36525 -> 100 yrs
+                                            maximumDate={new Date}
+                                            isVisible={this.state.isToDateTimePickerVisible}
+                                            onConfirm={this._handleToDatePicked}
+                                            onCancel={this._hideDateTimePicker}
+                                        />
+                                    </View>
+                                    <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                        <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} ></Image>
+                                    </View>
+                                </TouchableOpacity>
+                        }
+                    </View>
+
+
+                    <View style={{ height: hp('7%'), justifyContent: 'center' }}></View>
+                </View>
+                <View style={{ height: hp('4%'), width: wp('68%'), alignSelf: 'center', zIndex: 1000, position: 'absolute', top: hp('33'), right: wp('15%') }}>
+                    <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onSubmit : this.onSubmit()} ButtonText='Submit' />
+                </View>
+                {this.state.onReportResultView == false ?
+                    <View style={{ height: hp('50%'), marginLeft: wp('5%'), marginRight: wp('5%'), borderWidth: hp('0.1%'), borderColor: color.lightGray, marginTop: hp('5%'), borderRadius: wp('3%'), backgroundColor: '#ebebeb' }}>
+                        <View style={{ height: hp('30%'), justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('15%'), width: hp('15%'), tintColor: color.lightGray }} />
+                        </View>
+                        <View style={{ height: hp('6%'), justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ color: color.lightGray, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Get Your NEET Model Reports</Text>
+                        </View>
+                        <View style={{ height: hp('14%'), justifyContent: 'center' }}></View>
+                    </View>
+                    :
+                    <View>
+                        <View style={{ height: hp('40%'), marginLeft: wp('5%'), marginRight: wp('5%'), borderWidth: hp('0.1%'), borderColor: color.lightGray, marginTop: hp('5%'), borderRadius: wp('3%'), }}>
+                            <View style={{ height: hp('6%'), flexDirection: 'row', borderBottomWidth: wp('0.2%'), borderBottomColor: color.lightGray, backgroundColor: '#ebebeb', borderTopLeftRadius: wp('3%'), borderTopRightRadius: wp('3%') }}>
+                                <View style={{ flex: 1.1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansBold, textAlign: 'center', color: color.lightGray }}>S.No</Text>
+                                </View>
+                                <View style={{ flex: 2.2, justifyContent: 'center' }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansBold, textAlign: 'center', color: color.lightGray }}>Date</Text>
+                                </View>
+
+                                <View style={{ flex: 2.4, justifyContent: 'center' }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansBold, textAlign: 'center', color: color.lightGray }}>Test Name</Text>
+                                </View>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <ScrollView showsVerticalScrollIndicator={false}>
+                                    <FlatList style={{ flex: 1 }}
+                                        data={NEET_ReportDetail}
+                                        keyExtractor={(item, index) => item.key}
+                                        renderItem={({ item, index }) =>
+                                            <View style={{ flex: 1 }}>
+                                                <TouchableOpacity onPress={() => this.onSelectReport(item.TestId, item)} style={{ height: hp('6%'), flexDirection: 'row',marginTop:hp('1%') }}>
+                                                    <View style={{ flex: 1.1, justifyContent: 'flex-start', }}>
+                                                        <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansBold, color: this.state.onSelectReportColor !== item.TestId ? color.lightGray : color.black, textAlign: 'center' }}>{index+1}</Text>
+                                                    </View>
+                                                    <View style={{ flex: 2.2, justifyContent: 'flex-start' }}>
+                                                        <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansBold, color: this.state.onSelectReportColor !== item.TestId ? color.lightGray : color.black, textAlign: 'center' }}>{item.TestDate}</Text>
+                                                    </View>
+
+                                                    <View style={{ flex: 2.4, justifyContent: 'flex-start' }}>
+                                                        <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansBold, color: this.state.onSelectReportColor !== item.TestId ? color.lightGray : color.black, textAlign: 'center' }}>{item.TestName}</Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            </View>}
+                                    />
+                                </ScrollView>
+
+                            </View>
+                        </View>
+
+                        {this.state.onSelectReportColor == -1 ?
+                            <View>
+                                <View style={{ height: hp('2%') }} />
+                                <View style={{ height: hp('7%'), justifyContent: 'center', alignItems: 'center', backgroundColor: color.lightGray, borderRadius: hp("3.5"), marginLeft: wp('10%'), marginRight: wp('10%') }}>
+                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.white, fontFamily: fontFamily.OpenSansSemiBold }}>View Summary</Text>
+                                </View>
+                                <View style={{ height: hp('2%') }} />
+                            </View>
+                            :
+                            <View>
+                                <View style={{ height: hp('2%') }} />
+                                <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onViewSummary : this.onViewSummary()} ButtonText='View Summary' />
+                                <View style={{ height: hp('2%') }} />
+                            </View>
+                        }
+
+                    </View>
+                }
+
+            </View>
+
+
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        Report_NEETTestAction: (Token, FromDate, ToDate) => {
+            dispatch(Report_NEETTestAction(Token, FromDate, ToDate));
+        },
+
+        AllSummaryReportAction: (Token, Summary, TypeId) => {
+            dispatch(AllSummaryReportAction(Token, Summary, TypeId));
+        },
+
+
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(NEETModelTest_Reports);
+
+

@@ -1,0 +1,17 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    TouchableOpacity,
+} from 'react-native';
+import { fontSize, color, fontFamily } from '../NeetStyles/fontsAndColors';
+import { wp, hp } from './ResponsiveScreen'
+export default class ButtonRed extends Component {
+    render() {
+        return (
+            <TouchableOpacity onPress={() => this.props.OnButtonClicked()}
+                style={{ height: hp('7%'), justifyContent: 'center', alignItems: 'center', backgroundColor: color.appRed, borderRadius: hp("3.5%"), marginLeft: wp('10%'), marginRight: wp('10%'), marginTop: hp('1.5%') }}>
+                <Text style={{ fontSize: fontSize.lightMedium, color: color.white, textAlign: 'center', fontFamily: fontFamily.OpenSansSemiBold }}>{this.props.ButtonText}</Text>
+            </TouchableOpacity>
+        );
+    }
+}

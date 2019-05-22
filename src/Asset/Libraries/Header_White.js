@@ -1,0 +1,45 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TouchableOpacity,
+    Image
+} from 'react-native'
+import { LinearGradient } from './NpmList';
+import { wp, hp } from './ResponsiveScreen'
+import { fontSize, color, fontFamily, } from '../NeetStyles/fontsAndColors';
+import { Mystatusbar_Trans } from './index'
+
+export class Header_White extends Component {
+
+    constructor(props) {
+        super(props);
+
+    }
+    render() {
+
+        return (
+            <View>
+                <Mystatusbar_Trans />
+                <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[color.white, color.white]} style={{ height: hp('8%'), flexDirection: 'row', justifyContent: 'center' }}>
+                    <TouchableOpacity onPress={() => this.props.onPressLeftIcon()} style={{ flex: 0.15, justifyContent: 'center', alignItems: 'center' }}>
+                        <Image source={require('./../Icons/left-arrow.png')} style={{ height: wp('5.5%'), width: wp('5.5%'), tintColor: color.black }} />
+                    </TouchableOpacity>
+                    <View style={{ flex: 0.70, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ fontSize: fontSize.Medium, fontFamily: fontFamily.OpenSansRegular }}>{this.props.HeaderText}</Text>
+                    </View>
+                    <View style={{ flex: 0.15, justifyContent: 'center', alignItems: 'center' }} />
+                </LinearGradient>
+            </View>
+
+        )
+    }
+};
+
+
+
+
+
+
+
+

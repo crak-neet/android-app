@@ -1,0 +1,51 @@
+import React, { Component } from 'react';
+import { View, NetInfo, AsyncStorage } from 'react-native';
+import { SplashScreen, connect } from '../../Asset/Libraries/NpmList';
+// import { Retry } from './Retry';
+global.isConnected = true
+class splashscreen extends Component {
+    constructor() {
+        super();
+        this.state = {
+
+        }
+    }
+    componentWillMount() {
+
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.props.navigation.navigate('Drawer')
+            } else {
+                this.props.navigation.navigate('Login')
+            }
+        })
+    }
+    componentDidMount() {
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        SplashScreen.close({
+            animationType: SplashScreen.animationType.scale,
+            duration: 850,
+            delay: 500,
+        })
+    }
+    handleConnectivityChange = isConnected => {
+        if (isConnected) {
+            global.isConnected = true
+        } else {
+            global.isConnected = false
+            // this.props.navigation.navigate("Retry")
+        }
+    };
+    render() {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
+
+        );
+    }
+}
+const mapStateToProps = (state) => {
+    return {
+        // CommonReducer: state.CommonReducer
+    };
+}
+export default connect(mapStateToProps)(splashscreen);

@@ -1,0 +1,65 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import { Invaliduser_Action } from './Invaliduser_Action'
+export function StartSubjectTestAction(Token, SubjectId, subjectName) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SubjectId": SubjectId,
+                "SubjectName": subjectName,
+            }),
+            method: 'post',
+            url: 'question/subjectwisetest'
+        }).then((JsonResponse) => { 
+            if (JsonResponse.ResultStatus == "true") {
+                var subjectFullDetails = JsonResponse
+                var subjectTestQuestions = JsonResponse.result
+                var _subjectIdSave = JsonResponse.SubjectId
+                dispatch(getServiceSuccess(subjectFullDetails, subjectTestQuestions, _subjectIdSave))
+            } else if (JsonResponse.Message == "Invalid User") {
+
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+           
+        }).catch((error) => {
+            Snackbar.show({
+                title: "Please try again,Later",
+                duration: Snackbar.LENGTH_SHORT
+            });
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'subjectWiseTest',
+    }
+}
+export function getServiceSuccess(subjectFullDetails, subjectTestQuestions, _subjectIdSave) {
+    return {
+        type: 'subjectWiseTest_SUCCESS',
+        subjectFullDetails, subjectTestQuestions, _subjectIdSave
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'subjectWiseTest_FAILURE',
+    }
+}

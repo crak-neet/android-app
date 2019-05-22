@@ -1,0 +1,182 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TouchableOpacity,
+    Keyboard,
+    Image,
+    ScrollView,
+    AsyncStorage,
+    FlatList,
+
+} from 'react-native';
+
+
+import { fontSize, color, fontFamily, width, height } from '../../Asset/NeetStyles/fontsAndColors';
+import Button from '../../Asset/Libraries/Button';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, Moment, ModalPicker, connect, DateTimePicker } from '../../Asset/Libraries/NpmList';
+import { Header_Only_Drawer } from '../../Asset/Libraries/index'
+
+import { Report_ReviseSearchAction } from './../../Redux/Actions/Report_ReviseSearchAction';
+
+class Revise_Search extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            isDateTimePickerVisible: false,
+            isToDateTimePickerVisible: false,
+            FromDate: '',
+            ToDate: '',
+            token: ''
+
+        }
+
+        this.onSubmit = debounce(this.onSubmit.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+       
+
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.setState({
+                    token: Token
+                })
+            }
+        })
+    }
+
+
+    onSubmit() {
+        if (this.state.FromDate == "") {
+            Snackbar.show({
+                title: "From Date is Required",
+                duration: Snackbar.LENGTH_SHORT
+            });
+        } else if (this.state.ToDate == "") {
+            Snackbar.show({
+                title: "To Date is Required",
+                duration: Snackbar.LENGTH_SHORT
+            });
+        } else {
+            this.props.Report_ReviseSearchAction(this.state.token, this.state.FromDate, this.state.ToDate)
+        }
+
+    }
+
+    //-----------------------------Date Picker----------------------
+    _showDateTimePicker() { this.setState({ isDateTimePickerVisible: true }); }
+    _showToDateTimePicker() { this.setState({ isToDateTimePickerVisible: true }); }
+
+    _hideDateTimePicker = () => this.setState({
+        isDateTimePickerVisible: false,
+        isToDateTimePickerVisible: false,
+    });
+
+    _handleFromDatePicked = (fromDate) => {
+        this.setState({ FromDate: Moment(fromDate).format('YYYY-MM-DD') })
+        this._hideDateTimePicker();
+    };
+    _handleToDatePicked = (ToDate) => {
+        this.setState({ ToDate: Moment(ToDate).format('YYYY-MM-DD') })
+        this.setState({ isToDateTimePickerVisible: false });
+    };
+
+    render() {
+
+        return (
+
+            <View style={{ flex: 1, backgroundColor: color.white, }}>
+
+                <Header_Only_Drawer onPressLeftIcon={() => this.props.navigation.navigate('DrawerOpen')} HeaderText='Revise Questions' />
+                <View style={{ height: hp("5%") }} />
+                <View style={{ height: hp('20%'), justifyContent: 'center', marginLeft: wp('5%'), marginRight: wp('5%'), marginTop: hp('2%'), borderRadius: wp('3%'), borderColor: color.lightGray, borderWidth: hp('0.15%'), }}>
+                    <View style={{ height: hp('7%'), flexDirection: 'row', justifyContent: 'center', marginLeft: wp('5%'), marginRight: wp('5%'), }}>
+                        <TouchableOpacity onPress={() => this._showDateTimePicker()} style={{ flex: 4.6, flexDirection: 'row', justifyContent: 'center', borderBottomColor: color.lightGray, borderBottomWidth: hp('0.1%') }}>
+                            <View style={{ flex: 0.8, justifyContent: 'center' }}>
+                                <Text style={{ color: this.state.FromDate == "" ? color.lightGray : color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular, backgroundColor: 'transparent', }}>{this.state.FromDate == "" ? "From Date" : this.state.FromDate}</Text>
+                                <DateTimePicker
+                                    mode='date'
+                                    //for one day -> 86400000 , 6570 -> 18 yrs
+                                    maximumDate={new Date}
+                                    //for one day -> 86400000 , 36525 -> 100 yrs
+                                    // minimumDate={new Date(new Date().getTime() - (86400000 * 36525))}
+                                    isVisible={this.state.isDateTimePickerVisible}
+                                    onConfirm={this._handleFromDatePicked}
+                                    onCancel={this._hideDateTimePicker}
+                                />
+                            </View>
+                            <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} ></Image>
+                            </View>
+                        </TouchableOpacity>
+                        <View style={{ flex: 0.8, justifyContent: 'center' }}></View>
+                        <TouchableOpacity onPress={() => this._showToDateTimePicker()} style={{ flex: 4.6, flexDirection: 'row', justifyContent: 'center', borderBottomColor: color.lightGray, borderBottomWidth: hp('0.1%') }}>
+                            <View style={{ flex: 0.8, justifyContent: 'center' }}>
+                                <Text style={{ color: this.state.ToDate == "" ? color.lightGray : color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular, backgroundColor: 'transparent', }}>{this.state.ToDate == "" ? "To Date" : this.state.ToDate}</Text>
+                                <DateTimePicker
+                                    //for one day -> 86400000 , 6570 -> 18 yrs
+                                    maximumDate={new Date}
+                                    //for one day -> 86400000 , 36525 -> 100 yrs
+                                    // minimumDate={new Date(new Date().getTime() - (86400000 * 36525))}
+                                    isVisible={this.state.isToDateTimePickerVisible}
+                                    onConfirm={this._handleToDatePicked}
+                                    onCancel={this._hideDateTimePicker}
+                                />
+                            </View>
+                            <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} ></Image>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+
+                    <View style={{ height: hp('7%'), justifyContent: 'center' }}></View>
+                </View>
+                <View style={{ height: hp('4%'), width: wp('68%'), alignSelf: 'center', zIndex: 1000, position: 'absolute', top: hp('33'), right: wp('15%') }}>
+                    <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onSubmit : this.onSubmit()} ButtonText='Submit' />
+                </View>
+
+
+                <View style={{ height: hp('50%'), marginLeft: wp('5%'), marginRight: wp('5%'), borderWidth: hp('0.1%'), borderColor: color.lightGray, marginTop: hp('5%'), borderRadius: wp('3%'), backgroundColor: '#ebebeb' }}>
+                    <View style={{ height: hp('30%'), justifyContent: 'flex-end', alignItems: 'center' }}>
+                        <Image source={require('./../../Asset/Icons/question.png')} style={{ height: hp('20%'), width: hp('20%'), tintColor: color.appRed }} />
+                    </View>
+                    <View style={{ height: hp('6%'), justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ color: color.lightGray, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Get Your Revise Questions & Answers</Text>
+                    </View>
+                    <View style={{ height: hp('14%'), justifyContent: 'center' }}></View>
+                </View>
+
+
+            </View>
+
+
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        Report_ReviseSearchAction: (Token, FromDate, ToDate) => {
+            dispatch(Report_ReviseSearchAction(Token, FromDate, ToDate));
+        },
+
+
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Revise_Search);
+
+

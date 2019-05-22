@@ -1,0 +1,67 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+
+export function Report_AssessmentTestAction(Token, FromDate, ToDate,SubjectId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "FromDate": FromDate,
+                "ToDate": ToDate,
+                "SubjectId": SubjectId
+            }),
+            method: 'post',
+            url: 'report/assesmentreport'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var AssessmentTest_ReportDetails = JsonResponse.result
+                dispatch(getServiceSuccess(AssessmentTest_ReportDetails))
+            }else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure([]))
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+            
+        }).catch((error) => {
+            Snackbar.show({
+                title: "Please try again,Later",
+                duration: Snackbar.LENGTH_SHORT
+            });
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'Report_AssessmentTestAction',
+    }
+}
+export function getServiceSuccess(AssessmentTest_ReportDetails) {
+    return {
+        type: 'Report_AssessmentTestAction_SUCCESS',
+        AssessmentTest_ReportDetails
+        
+    }
+}
+export function getServiceFailure(AssessmentTest_ReportDetails) {
+    return {
+        type: 'Report_AssessmentTestAction_FAILURE',
+        AssessmentTest_ReportDetails
+    }
+}

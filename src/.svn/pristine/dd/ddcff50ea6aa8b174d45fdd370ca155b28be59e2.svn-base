@@ -1,0 +1,53 @@
+import { httpRequest } from './../../Asset/Utils/axios';
+import { Snackbar } from './../../Asset/Libraries/NpmList';
+import { AsyncStorage } from 'react-native';
+export function LoginAction(UserName, Password, DeviceId,PushnotificationId,DeviceType,Device) {
+    // console.error(UserName, Password, DeviceId,PushnotificationId,DeviceType,Device)
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "UserName": UserName,
+                "Password": Password,
+                "DeviceId": DeviceId,
+                "PushnotificationId": PushnotificationId,
+                "DeviceType": DeviceType,
+                "Device": Device,
+            }),
+            method: 'post',
+            url: 'user/login'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                AsyncStorage.setItem('Token', JsonResponse.Token, () => {
+                });
+                dispatch(getServiceSuccess())
+            } else {
+
+                dispatch(getServiceFailure())
+            }
+            this.setTimeout(() => {
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }, 1000);
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onLoginAction',
+    }
+}
+export function getServiceSuccess() {
+    return {
+        type: 'onLoginAction_SUCCESS',
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onLoginAction_FAILURE',
+    }
+}

@@ -1,0 +1,48 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function DashboardTestDetailAction(Token) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+            }),
+            method: 'post',
+            url: 'user/studenttestdetails'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var testDetail = JsonResponse.result
+                
+                dispatch(getServiceSuccess(testDetail))
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'testDetailDashboard',
+
+    }
+}
+export function getServiceSuccess(testDetail) {
+   
+    return {
+        type: 'testDetailDashboard_SUCCESS',
+        testDetail
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'testDetailDashboard_FAILURE',
+    }
+}

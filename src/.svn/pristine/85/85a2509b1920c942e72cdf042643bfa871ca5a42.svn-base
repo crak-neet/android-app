@@ -1,0 +1,364 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    ScrollView,
+    Platform,
+    Picker
+} from 'react-native';
+
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import Button from '../../Asset/Libraries/Button';
+import ButtonRed from '../../Asset/Libraries/ButtonRed';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { Header_BackIcon } from '../../Asset/Libraries/index'
+import { debounce, Snackbar, Icon, connect } from '../../Asset/Libraries/NpmList';
+import { Header_Only_Drawer } from '../../Asset/Libraries/index'
+class SpecialTest_Ranking extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+
+        }
+        this.backIconPress = debounce(this.backIconPress.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+    componentWillMount() {
+
+    }
+    componentDidMount() {
+
+    }
+    backIconPress() {
+        this.props.navigation.goBack()
+    }
+    goBack() {
+        this.props.navigation.goBack()
+    }
+    render() {
+        return (
+            <View style={{ flex: 1, backgroundColor: color.white, }}>
+                <Header_BackIcon onPressLeftIcon={() => this.props.skipDebounce ? this.props.backIconPress : this.backIconPress()} HeaderText='Special Test' />
+                <View style={{ height: hp('8%'), flexDirection: 'row', justifyContent: 'center', marginLeft: wp('5%'), marginRight: wp('5%'), borderBottomWidth: wp('0.2%'), borderColor: color.lightGray }}>
+                    <View style={{ flex: 8, justifyContent: 'center' }}>
+                        <Text style={{ fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansSemiBold, color: '#e68021', textAlign: 'center' }}>Know Your Position</Text>
+                    </View>
+                </View>
+                {/* <View style={{ height: hp('5%'), }} /> */}
+                <View style={{ height: hp('80%'), justifyContent: 'center' }}>
+                    <View style={{ height: hp('70%'), marginLeft: wp('5%'), marginRight: wp('5%'), borderWidth: hp('0.1%'), borderRadius: wp('3%'), justifyContent: 'center', backgroundColor: "#ebebeb" }}>
+                        <View style={{ height: hp('7%'), flexDirection: "row", borderBottomWidth: wp('0.1%') }}>
+                            <View style={{ flex: 1.5 }}>
+                            </View>
+                            <View style={{ flex: 1, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansSemiBold, }}>Rank</Text>
+                            </View>
+                            <View style={{ flex: 3, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansSemiBold, textAlign: 'center' }}>Student</Text>
+                            </View>
+                            <View style={{ flex: 3, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansSemiBold, textAlign: 'center' }}>Districts</Text>
+                            </View>
+                            <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansSemiBold, textAlign: 'center' }}>Marks</Text>
+                            </View>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                                <ScrollView showsVerticalScrollIndicator={false}>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>1</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Manivasagam</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Thanjavur</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>20</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>2</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Kirubakar</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Thanjavur</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>19</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>3</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Shajahan</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Thanjavur</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>18</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>4</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Sam</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Chennai</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>17</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>4</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Vignesh</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Madurai</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>17</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>5</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Murali</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Kanjipuram</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>16</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>5</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Balaji</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Thanjavur</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>16</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>6</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Sriram</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Chennai</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>15</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>7</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Kumaresan</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Chennai</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>14</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>7</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Rani</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Madurai</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>14</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>8</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Vidhya</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Chennai</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>13</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>8</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Dharshini</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Villupuram</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>13</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>8</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Priya</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Cuddalore</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>13</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>9</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Rithik</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Chennai</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>12</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image source={require('./../../Asset/Images/phonepicutres-TA.jpg')} style={{ height: hp('4%'), width: hp('4%'), borderRadius: hp('2%') }} />
+                                        </View>
+                                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>10</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Deepthish</Text>
+                                        </View>
+                                        <View style={{ flex: 3, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Coimbatore</Text>
+                                        </View>
+                                        <View style={{ flex: 1.5, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>11</Text>
+                                        </View>
+                                    </View>
+                                </ScrollView>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </View>
+                </View>
+                <View style={{ height: hp('3%'), }} />
+
+                {/* <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.backIconPress : this.backIconPress('')} ButtonText='Go Back' /> */}
+            </View>
+
+
+        );
+    }
+}
+const mapStateToProps = (state) => {
+    return {
+        //    CommonReducer: state.CommonReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        // LoginAction: (Username, Password, Latitude, Longitude, Device, IpAddress, DeviceId, DeviceType, PushNotificationId) => {
+        //     dispatch(LoginAction(Username, Password, Latitude, Longitude, Device, IpAddress, DeviceId, DeviceType, PushNotificationId));
+        // },
+
+
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(SpecialTest_Ranking);
+

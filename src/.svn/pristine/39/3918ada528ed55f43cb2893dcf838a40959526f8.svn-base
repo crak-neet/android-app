@@ -1,0 +1,50 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function ProfileDetailAction(Token) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+            }),
+            method: 'post',
+            url: 'user/studentprofile'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var profileDetail = JsonResponse.result
+                var studentInfo = profileDetail.StudentInfo
+                var fatherInfo = profileDetail.StudentFatherInfo
+                var motherInfo = profileDetail.StudentMotherInfo
+                // console.error(motherInfo)
+                dispatch(getServiceSuccess(studentInfo,fatherInfo,motherInfo))
+            } else {
+                dispatch(getServiceFailure())
+            }
+
+            Snackbar.show({
+                title: JsonResponse.Messsage,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'profileDetail',
+
+    }
+}
+export function getServiceSuccess(studentInfo,fatherInfo,motherInfo) {
+    return {
+        type: 'profileDetail_SUCCESS',
+        studentInfo,fatherInfo,motherInfo
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'profileDetail_FAILURE',
+    }
+}

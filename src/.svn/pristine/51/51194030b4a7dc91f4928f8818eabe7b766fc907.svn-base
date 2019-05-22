@@ -1,0 +1,46 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function QuickReportChapterAction(Token, TestDetailId) {
+
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "TestDetailId": TestDetailId,
+            }),
+            method: 'post',
+            url: 'question/quickreportchapter'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var testQuickReport = JsonResponse.result
+                dispatch(getServiceSuccess(testQuickReport))
+            } else {
+                dispatch(getServiceFailure())
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onTestReports',
+    }
+}
+export function getServiceSuccess(testQuickReport) {
+    return {
+        type: 'onTestReports_SUCCESS',
+        testQuickReport
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onTestReports_FAILURE',
+    }
+}

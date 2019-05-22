@@ -1,0 +1,319 @@
+import React, { Component } from 'react';
+import { View, Dimensions, Image, ScrollView } from 'react-native';
+import RightToLeftTransition from './../../../Asset/Libraries/RightLeftTransition';
+import { StackNavigator, TabNavigator } from 'react-navigation';
+import Dashboard from '../../../Components/Extra_Modules/Dashboard';
+import Login from '../../../Components/Registration_Modules/Login';
+
+import ChapterTest from '../../../Components/ChapterTest_Modules/ChapterTest';
+import ChapterTest_Questions from '../../../Components/ChapterTest_Modules/ChapterTest_Questions';
+import ChapterTest_Scorecard from '../../../Components/ChapterTest_Modules/ChapterTest_Scorecard';
+import ChapterTest_Reports from '../../../Components/ChapterTest_Modules/ChapterTest_Reports';
+import ChapterTest_SummaryReports from '../../../Components/ChapterTest_Modules/ChapterTest_SummaryReports';
+import ChapterTest_DetailReports from '../../../Components/ChapterTest_Modules/ChapterTest_DetailReports';
+
+import SubjectTest from '../../../Components/SubjectTest_Modules/SubjectTest';
+import SubjectTest_Questions from '../../../Components/SubjectTest_Modules/SubjectTest_Questions';
+import SubjectTest_Scorecard from '../../../Components/SubjectTest_Modules/SubjectTest_Scorecard';
+import SubjectTest_Reports from '../../../Components/SubjectTest_Modules/SubjectTest_Reports';
+import SubjectTest_SummaryReports from '../../../Components/SubjectTest_Modules/SubjectTest_SummaryReports';
+import SubjectTest_DetailReports from '../../../Components/SubjectTest_Modules/SubjectTest_DetailReports';
+
+import AssessmentTest from '../../../Components/AssessmentTest_Modules/AssessmentTest';
+import AssessmentTest_Questions from '../../../Components/AssessmentTest_Modules/AssessmentTest_Questions';
+import AssessmentTest_Scorecard from '../../../Components/AssessmentTest_Modules/AssessmentTest_Scorecard';
+import AssessmentTest_Reports from '../../../Components/AssessmentTest_Modules/AssessmentTest_Reports';
+import AssessmentTest_SummaryReports from '../../../Components/AssessmentTest_Modules/AssessmentTest_SummaryReports';
+import AssessmentTest_DetailReports from '../../../Components/AssessmentTest_Modules/AssessmentTest_DetailReports';
+
+import SpecialTest from '../../../Components/SpecialTest_Modules/SpecialTest';
+import SpecialTest_Questions from '../../../Components/SpecialTest_Modules/SpecialTest_Questions';
+import SpecialTest_Scorecard from '../../../Components/SpecialTest_Modules/SpecialTest_Scorecard';
+import SpecialTest_Reports from '../../../Components/SpecialTest_Modules/SpecialTest_Reports';
+import SpecialTest_SummaryReports from '../../../Components/SpecialTest_Modules/SpecialTest_SummaryReports';
+import SpecialTest_DetailReports from '../../../Components/SpecialTest_Modules/SpecialTest_DetailReports';
+import SpecialTest_Ranking from '../../../Components/SpecialTest_Modules/SpecialTest_Ranking';
+
+import NEETModelTest from '../../../Components/NEETModelTest_Modules/NEETModelTest';
+import NEETModelTest_Questions from '../../../Components/NEETModelTest_Modules/NEETModelTest_Questions';
+import NEETModelTest_Scorecard from '../../../Components/NEETModelTest_Modules/NEETModelTest_Scorecard';
+import NEETModelTest_Reports from '../../../Components/NEETModelTest_Modules/NEETModelTest_Reports';
+import NEETModelTest_SummaryReports from '../../../Components/NEETModelTest_Modules/NEETModelTest_SummaryReports';
+import NEETModelTest_DetailReports from '../../../Components/NEETModelTest_Modules/NEETModelTest_DetailReports';
+
+import Revise_Search from '../../../Components/Revise_Modules/Revise_Search';
+import Revise_Results from '../../../Components/Revise_Modules/Revise_Results';
+
+import MyProfile from '../../../Components/Profile_Modules/MyProfile';
+import ChangePassword from '../../../Components/Profile_Modules/ChangePassword';
+import Notification from '../../../Components/Extra_Modules/Notification';
+import SkippedTest_Module from '../../../Components/Extra_Modules/SkippedTest_Module';
+
+
+const DrawerApps = StackNavigator({
+    Dashboard: {
+        screen: Dashboard,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        }),
+    },
+    Login:{
+        screen: Login,
+        navigationOptions:  {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    ChangePassword: {
+        screen: ChangePassword,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    SkippedTest_Module: {
+        screen: SkippedTest_Module,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    
+    ChapterTest: {
+        screen: ChapterTest,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    ChapterTest_Questions: {
+        screen: ChapterTest_Questions,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    ChapterTest_Scorecard: {
+        screen: ChapterTest_Scorecard,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    ChapterTest_Reports: {
+        screen: ChapterTest_Reports,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    ChapterTest_SummaryReports: {
+        screen: ChapterTest_SummaryReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    ChapterTest_DetailReports: {
+        screen: ChapterTest_DetailReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    MyProfile: {
+        screen: MyProfile,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    Notification: {
+        screen: Notification,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    SpecialTest: {
+        screen: SpecialTest,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    SpecialTest_Questions: {
+        screen: SpecialTest_Questions,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    SpecialTest_Scorecard: {
+        screen: SpecialTest_Scorecard,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    SpecialTest_Reports: {
+        screen: SpecialTest_Reports,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    SpecialTest_SummaryReports: {
+        screen: SpecialTest_SummaryReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    SpecialTest_DetailReports: {
+        screen: SpecialTest_DetailReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    SpecialTest_Ranking: {
+        screen: SpecialTest_Ranking,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    SubjectTest: {
+        screen: SubjectTest,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    SubjectTest_Questions: {
+        screen: SubjectTest_Questions,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    SubjectTest_Scorecard: {
+        screen: SubjectTest_Scorecard,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    SubjectTest_Reports: {
+        screen: SubjectTest_Reports,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    SubjectTest_SummaryReports: {
+        screen: SubjectTest_SummaryReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    SubjectTest_DetailReports: {
+        screen: SubjectTest_DetailReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    AssessmentTest: {
+        screen: AssessmentTest,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    AssessmentTest_Questions: {
+        screen: AssessmentTest_Questions,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    AssessmentTest_Scorecard: {
+        screen: AssessmentTest_Scorecard,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    AssessmentTest_Reports: {
+        screen: AssessmentTest_Reports,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    AssessmentTest_SummaryReports: {
+        screen: AssessmentTest_SummaryReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    AssessmentTest_DetailReports: {
+        screen: AssessmentTest_DetailReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    NEETModelTest: {
+        screen: NEETModelTest,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    NEETModelTest_Questions: {
+        screen: NEETModelTest_Questions,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    NEETModelTest_Scorecard: {
+        screen: NEETModelTest_Scorecard,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    NEETModelTest_Reports: {
+        screen: NEETModelTest_Reports,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    NEETModelTest_SummaryReports: {
+        screen: NEETModelTest_SummaryReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    NEETModelTest_DetailReports: {
+        screen: NEETModelTest_DetailReports,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    Revise_Search: {
+        screen: Revise_Search,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    Revise_Results: {
+        screen: Revise_Results,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+},
+    {
+        initialRouteName: 'Dashboard',
+        transitionConfig: RightToLeftTransition,
+        navigationOptions: {
+            gesturesEnabled: false,
+            // drawerLockMode: 'locked-closed'
+        },
+    }
+)
+export default DrawerApps;

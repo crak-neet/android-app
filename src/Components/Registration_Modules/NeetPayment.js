@@ -1,0 +1,96 @@
+import React, { Component } from 'react';
+import {
+    View,
+    TouchableWithoutFeedback,
+    Keyboard,
+    AsyncStorage,
+    WebView
+} from 'react-native';
+import { color } from '../../Asset/NeetStyles/fontsAndColors';
+import { Header_White } from '../../Asset/Libraries/index'
+import { debounce, Snackbar, Icon, connect, DeviceInfo, FCM } from '../../Asset/Libraries/NpmList';
+class NeetPayment extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            OtpValue: '',
+            token: '',
+        }
+
+    }
+    componentWillMount() {
+        AsyncStorage.getItem("Temp_token", (error, Token) => {
+            if (Token) {
+                this.setState({
+                    token: Token
+                });
+            }
+        })
+    }
+    backIconPress() {
+        this.props.navigation.goBack()
+    }
+    _onNavigationStateChange(webViewState) {
+        var paymentUrl = webViewState.url
+        var paymentStatus = paymentUrl.split("Payment_status=1")
+        if (paymentStatus[0] == "http://www.crakneet.com/student/payment/paymentresponse?") {
+            this.props.navigation.navigate("Login")
+        } else if (webViewState.url == "http://www.crakneet.com/student/payment/paymentresponse?Payment_status=0") {
+            this.props.navigation.navigate("Login")
+        }   
+    }
+    render() {
+
+        const { paymentLink } = this.props.NeetReducer
+
+        return (
+            // <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+                <View style={{ flex: 1, backgroundColor: color.white }}>
+                    {/* <MystatusBar_Tran /> */}
+                    <Header_White onPressLeftIcon={() => this.backIconPress()} HeaderText='Payment' />
+                    <WebView
+                        ref="webview"
+                        source={{ uri:  paymentLink}}
+                        onNavigationStateChange={this._onNavigationStateChange.bind(this)}
+                        injectedJavaScript={this.state.cookie}
+
+                        javaScriptEnabled={true}
+                        style={{ flex: 1, backgroundColor: "#fff", }}
+
+                        //For the Cache
+                        domStorageEnabled={true}
+                        //View to show while loading the webpage
+                        renderLoading={this.ActivityIndicatorLoadingView}
+                        //Want to show the view or not
+                        startInLoadingState={true}
+                    />
+
+                </View>
+            // </TouchableWithoutFeedback>
+        );
+
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        // OtpVerificationAction: (Token, OtpValue) => {
+        //     dispatch(OtpVerificationAction(Token, OtpValue));
+        // },
+        // OtpResendAction: (Token, OtpValue) => {
+        //     dispatch(OtpResendAction(Token, OtpValue));
+        // },
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(NeetPayment);
+
+

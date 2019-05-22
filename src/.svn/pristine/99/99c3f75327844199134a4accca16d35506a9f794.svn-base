@@ -1,0 +1,52 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function StartSpecialTest_SaveAction(Token, SpecialTestId,TestDetailId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SpecialTestId": SpecialTestId,
+                "TestDetailId": TestDetailId,
+            }),
+            method: 'post',
+            url: 'question/specialtest'
+        }).then((JsonResponse) => {
+            
+            if (JsonResponse.ResultStatus == "true") {
+                var specialTestQuestions = JsonResponse.result
+                
+                dispatch(getServiceSuccess(specialTestQuestions))
+            } else {
+                dispatch(getServiceFailure())
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+            // Snackbar.show({
+            //     title: JsonResponse.Message,
+            //     duration: Snackbar.LENGTH_SHORT,
+            // });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'saveSpecialTest',
+    }
+}
+export function getServiceSuccess(specialTestQuestions) {
+    return {
+        type: 'saveSpecialTest_SUCCESS',
+        specialTestQuestions
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'saveSpecialTest_FAILURE',
+    }
+}

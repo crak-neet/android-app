@@ -1,0 +1,96 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert, AsyncStorage } from 'react-native';
+
+import { Invaliduser_Action } from './Invaliduser_Action'
+import { DropdownSubjectAction } from './DropdownSubjectAction'
+import { cancelPendinTestAction } from './cancelPendinTestAction';
+import { AllSkipList_Action } from './AllSkipList_Action';
+var token = ''
+export function DashboardTestDetailAction(Token) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+            }),
+            method: 'post',
+            url: 'user/studenttestdetails'
+        }).then((JsonResponse) => {
+            
+            if (JsonResponse.ResultStatus == "true") {
+                // console.error(JsonResponse)
+                var testDetail = JsonResponse.result
+                var lastTestInfo = JsonResponse.LastAttendTestDetails
+
+                if (lastTestInfo !== null) {
+                    AsyncStorage.getItem("Token", (error, Token) => {
+                        token = Token
+                    })
+                  
+                    Alert.alert(
+                        "You are incompleted in " + lastTestInfo.TestType,
+                        "Do you want to continue ?",
+                        [
+                            { text: 'Cancel', onPress: () => dispatch(cancelPendinTestAction(token, lastTestInfo.TestDetailId)), style: 'cancel' },
+                            // { text: 'OK', onPress: () => dispatch(goIncompleteTest(lastTestInfo.TestDetailId, lastTestInfo.TestType)) },
+                            { text: 'Continue', onPress: () => dispatch(AllSkipList_Action(token, lastTestInfo.TestDetailId)) },
+                        ],
+                        { cancelable: false }
+                    )
+                }
+                dispatch(getServiceSuccess(testDetail,lastTestInfo))
+                dispatch(DropdownSubjectAction(Token))
+
+            } else if (JsonResponse.Message == "Invalid User") {
+
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            }
+            else {
+                dispatch(getServiceFailure())
+
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+
+        }).catch((error) => {
+
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'testDetailDashboard',
+
+    }
+}
+export function getServiceSuccess(testDetail,lastTestInfo) {
+    return {
+        type: 'testDetailDashboard_SUCCESS',
+        testDetail,lastTestInfo
+    }
+}
+
+export function getServiceFailure() {
+    return {
+        type: 'testDetailDashboard_FAILURE',
+    }
+}
+
+export function goIncompleteTest(pendingTestID, typeOfTest) {
+    return {
+        type: 'AttendIncompleteTest',
+        pendingTestID, typeOfTest
+    }
+}

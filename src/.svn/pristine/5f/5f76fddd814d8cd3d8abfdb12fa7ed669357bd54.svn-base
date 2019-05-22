@@ -1,0 +1,165 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    ScrollView,
+    AsyncStorage,
+    FlatList, TouchableOpacity
+} from 'react-native';
+
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, LinearGradient, connect } from '../../Asset/Libraries/NpmList';
+import { Header_BackIcon } from '../../Asset/Libraries/index'
+import { NotificationAction } from './../../Redux/Actions/NotificationAction';
+import { Invaliduser_Action } from './../../Redux/Actions/Invaliduser_Action';
+
+class Notification extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            Token: ''
+
+        }
+        this.backIconPress = debounce(this.backIconPress.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.setState({ Token: Token })
+                this.props.NotificationAction(Token)
+
+            }
+        })
+    }
+
+    backIconPress() {
+        this.props.navigation.navigate("Dashboard")
+    }
+
+    NotificationDetail_Method(Arraylist) {
+
+        fetch('http://139.59.42.219/api/user/notificationcheck', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "Token": this.state.Token,
+                "NotificationId": Arraylist.NotificationId
+            })
+        })
+            .then((response) => response.json())
+            .then((JsonResponse) => {
+                if (JsonResponse.ResultStatus == "true") {
+                    this.props.NotificationAction(this.state.Token)
+                } else if (JsonResponse.Message == "Invalid User") {
+                    Alert.alert(
+                        '',
+                        "Another device used, You have logged out",
+
+                        [
+                            { text: 'OK', onPress: () => this.props.Invaliduser_Action() },
+                        ],
+                        { cancelable: false }
+                    )
+                } else {
+                    Snackbar.show({
+                        title: JsonResponse.Message,
+                        duration: Snackbar.LENGTH_SHORT
+                    });
+                }
+            })
+            .catch((error) => {
+            });
+    }
+    render() {
+        const { notificationDetail } = this.props.NeetReducer
+        // if (notificationDetail != '') {
+        //     console.error(notificationDetail)
+        // }
+
+        return (
+
+            <View style={{ flex: 1, backgroundColor: color.white }}>
+                <Header_BackIcon onPressLeftIcon={() => this.props.skipDebounce ? this.props.backIconPress : this.backIconPress()} HeaderText='Notification History' />
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <FlatList style={{ flex: 1 }}
+                            data={notificationDetail}
+                            keyExtractor={(item, index) => item.key}
+                            renderItem={({ item, index }) =>
+                                <View style={{ flex: 1 }}>
+                                    <View style={{ height: hp('4.5%'), justifyContent: 'center', marginTop: hp('2%'), marginLeft: wp('2.5%'), marginRight: wp('2.5%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 0.015, backgroundColor: color.appRed, borderRadius: wp('1.2%'), marginTop: wp("1%"), }}></View>
+                                        <View style={{ flex: 0.985, justifyContent: 'center' }}>
+                                            <Text style={{ color: color.lightGray, fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansRegular, marginLeft: wp('2%') }}>{item.Date}</Text>
+                                        </View>
+                                    </View>
+                                    {item.MessageResult.map((MessageResult, index) => (<View>
+                                        {/* <View> */}
+                                        {item.checked == 1 ?
+                                            <View style={{ height: hp('8%'), justifyContent: 'center', marginTop: hp('2%'), marginLeft: wp('3%'), marginRight: wp('3%'), flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Image source={require('./../../Asset/Icons/Appicon1.png')} style={{ height: wp('16%'), width: wp('16%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={{ flex: 0.5, justifyContent: 'center' }}>
+                                                    <Text style={{ color: color.lightGray, fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansRegular, }}>{MessageResult.Title}</Text>
+                                                </View>
+                                                <View style={{ flex: 0.3, justifyContent: 'center' }}>
+                                                    <Text style={{ color: color.lightGray, fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansRegular, textAlign: 'right' }}>{MessageResult.Time}</Text>
+                                                </View>
+                                            </View>
+                                            :
+                                            <TouchableOpacity onPress={() => this.NotificationDetail_Method(item)} style={{ height: hp('8%'), justifyContent: 'center', marginTop: hp('2%'), marginLeft: wp('3%'), marginRight: wp('3%'), flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Image source={require('./../../Asset/Icons/Appicon1.png')} style={{ height: wp('16%'), width: wp('16%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={{ flex: 0.5, justifyContent: 'center' }}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansSemiBold, }}>{MessageResult.Title}</Text>
+                                                </View>
+                                                <View style={{ flex: 0.3, justifyContent: 'center' }}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansSemiBold, textAlign: 'right' }}>{MessageResult.Time}</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        }
+
+                                    </View>))}
+                                </View>}
+                        />
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+            </View>
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        NotificationAction: (Token) => {
+            dispatch(NotificationAction(Token));
+        },
+        Invaliduser_Action: () => {
+            dispatch(Invaliduser_Action());
+        },
+
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Notification);
+
+

@@ -1,0 +1,48 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function SpecialTestRankingAction(Token, SpecialTestId) {
+
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SpecialTestId": SpecialTestId,
+            }),
+            method: 'post',
+            url: 'question/knowposition'
+        }).then((JsonResponse) => {
+            // console.error(JsonResponse)
+            if (JsonResponse.ResultStatus == "true") {
+                var rankingPosition = JsonResponse.result
+                dispatch(getServiceSuccess(rankingPosition))
+            } else {
+                dispatch(getServiceFailure())
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        }).catch((error) => {
+
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onRankingPosition',
+    }
+}
+export function getServiceSuccess(rankingPosition) {
+    return {
+        type: 'onRankingPosition_SUCCESS',
+        rankingPosition
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onRankingPosition_FAILURE',
+    }
+}

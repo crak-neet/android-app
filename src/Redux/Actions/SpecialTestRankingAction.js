@@ -1,0 +1,64 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+export function SpecialTestRankingAction(Token, SpecialTestId) {
+
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SpecialTestId": SpecialTestId,
+            }),
+            method: 'post',
+            url: 'question/knowposition'
+        }).then((JsonResponse) => {
+          
+            if (JsonResponse.ResultStatus == "true") {
+                var rankingPosition = JsonResponse.result
+                dispatch(getServiceSuccess(rankingPosition))
+            }else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+          
+        }).catch((error) => {
+            Snackbar.show({
+                title: "Please try again,Later",
+                duration: Snackbar.LENGTH_SHORT
+            });
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onRankingPosition',
+    }
+}
+export function getServiceSuccess(rankingPosition) {
+    return {
+        type: 'onRankingPosition_SUCCESS',
+        rankingPosition
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onRankingPosition_FAILURE',
+    }
+}

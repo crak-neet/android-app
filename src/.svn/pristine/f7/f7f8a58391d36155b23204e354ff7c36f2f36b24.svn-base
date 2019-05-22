@@ -1,0 +1,53 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+
+export function StartNeetModelTestAction(Token) {
+    // console.error(Token,"123")
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+            }),
+            method: 'post',
+            url: 'question/neetmodeltest'
+        }).then((JsonResponse) => {
+            // console.error(JsonResponse)
+            if (JsonResponse.ResultStatus == "true") {
+                var neetModelTestQuestions = JsonResponse.result
+                dispatch(getServiceSuccess(neetModelTestQuestions))
+            } else {
+                dispatch(getServiceFailure())
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+            // Snackbar.show({
+            //     title: JsonResponse.Message,
+            //     duration: Snackbar.LENGTH_SHORT,
+            // });
+        }).catch((error) => {
+            // console.error(error)
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onStartNeetModelTest',
+    }
+}
+export function getServiceSuccess(neetModelTestQuestions) {
+    // console.error(neetModelTestQuestions)
+    return {
+        type: 'onStartNeetModelTest_SUCCESS',
+        neetModelTestQuestions
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onStartNeetModelTest_FAILURE',
+    }
+}

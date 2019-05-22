@@ -1,0 +1,53 @@
+import React from 'react';
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import { View, ActivityIndicator, Modal, Text } from 'react-native';
+
+let minutes = 0;
+let hours = 0;
+let Time = 0;
+class Timer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            ms: props.ms
+        }
+    }
+    componentWillMount() {
+        this.interval = setInterval(() => {
+            if ((this.state.ms) <= 0) {
+                clearInterval(this.interval);
+                this.forceUpdate();
+                return;
+            }
+            this.setState({ ms: this.state.ms + 1000 });
+        }, 1000)
+    }
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+    format() {
+
+        const { ms } = this.state;
+
+        let seconds = Math.floor(ms / 1000);
+      
+        if (seconds === 60) {
+            this.setState({ ms: 1000 })
+            ++minutes;
+
+        }
+        if (minutes === 60) {
+            minutes = 0;
+            if (++hours === 12) hours = 0;
+        }
+
+        Time = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+        return `${Time}`;
+    }
+    render() {
+        return (
+            <View><Text style={{ fontSize: fontSize.Small }}>{this.format(this.state.ms)}</Text></View>
+        )
+    }
+}
+export { Timer };

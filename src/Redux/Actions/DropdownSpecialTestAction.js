@@ -1,0 +1,67 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+
+export function DropdownSpecialTestAction(Token) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+            }),
+            method: 'post',
+            url: 'question/specialtestlist'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var list = JsonResponse.result
+                var specialTestList = [];
+
+                for (i = 0; i < list.length; i++) {
+                    specialTestList.push({
+                        "SpecialListId": list[i].SpecialListId,
+                        "label": list[i].SpecialListName
+                    })
+                }
+
+                dispatch(getServiceSuccess(specialTestList))
+            }else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+            }
+        }).catch((error) => {
+            Snackbar.show({
+                title: "Please try again,Later",
+                duration: Snackbar.LENGTH_SHORT
+            });
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'specialTestLists',
+    }
+}
+export function getServiceSuccess(specialTestList) {
+    return {
+        type: 'specialTestLists_SUCCESS',
+        specialTestList
+        
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'specialTestLists_FAILURE',
+    }
+}

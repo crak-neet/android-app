@@ -1,0 +1,67 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+export function StartAssesmentSaveAction(Token, SubjectId,AssesmentId,TestDetailId) {
+
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SubjectId": SubjectId,
+                "AssesmentId": AssesmentId,
+                "TestDetailId": TestDetailId,
+
+            }),
+            method: 'post',
+            url: 'question/assesmentwisetest'
+        }).then((JsonResponse) => {
+            
+            if (JsonResponse.ResultStatus == "true") {
+                var assessmentTestQuestions = JsonResponse.result
+                var _saveAssesSubjectId = JsonResponse.SubjectId
+                var _saveAssesmentId = JsonResponse.AssesmentId
+                dispatch(getServiceSuccess(assessmentTestQuestions,_saveAssesSubjectId,_saveAssesmentId))
+            } else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            }else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+           
+           
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onAssessmentSaveTest',
+    }
+}
+export function getServiceSuccess(assessmentTestQuestions,_saveAssesSubjectId,_saveAssesmentId) {
+    
+    return {
+        type: 'onAssessmentSaveTest_SUCCESS',
+        assessmentTestQuestions,_saveAssesSubjectId,_saveAssesmentId
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onAssessmentSaveTest_FAILURE',
+    }
+}

@@ -1,0 +1,54 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function DropdownSpecialTestAction(Token) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+            }),
+            method: 'post',
+            url: 'question/specialtestlist'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var list = JsonResponse.result
+                var specialTestList = [];
+
+                for (i = 0; i < list.length; i++) {
+                    specialTestList.push({
+                        "SpecialListId": list[i].SpecialListId,
+                        "label": list[i].SpecialListName
+                    })
+                }
+
+                dispatch(getServiceSuccess(specialTestList))
+            } else {
+                dispatch(getServiceFailure())
+            }
+            // Snackbar.show({
+            //     title: JsonResponse.Message,
+            //     duration: Snackbar.LENGTH_SHORT,
+            // });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'specialTestLists',
+    }
+}
+export function getServiceSuccess(specialTestList) {
+    return {
+        type: 'specialTestLists_SUCCESS',
+        specialTestList
+        
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'specialTestLists_FAILURE',
+    }
+}

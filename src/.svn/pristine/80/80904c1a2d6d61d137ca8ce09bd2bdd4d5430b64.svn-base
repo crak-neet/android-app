@@ -1,0 +1,111 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    ScrollView,
+    AsyncStorage,
+    FlatList,
+} from 'react-native';
+
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, LinearGradient, connect } from '../../Asset/Libraries/NpmList';
+import { Header_BackIcon } from '../../Asset/Libraries/index'
+
+import { NotificationAction } from './../../Redux/Actions/NotificationAction';
+class Notification extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+
+        }
+        this.backIconPress = debounce(this.backIconPress.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.props.NotificationAction(Token)
+            }
+        })
+    }
+    componentDidMount() {
+
+    }
+
+    backIconPress() {
+        this.props.navigation.goBack()
+    }
+
+    render() {
+        const { notificationDetail } = this.props.NeetReducer
+        // if (notificationDetail != '') {
+        //     console.error(notificationDetail[0].Result)
+        // }
+
+        return (
+
+            <View style={{ flex: 1, backgroundColor: color.white }}>
+                <Header_BackIcon onPressLeftIcon={() => this.props.skipDebounce ? this.props.backIconPress : this.backIconPress()} HeaderText='Notification History' />
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <FlatList style={{ flex: 1 }}
+                            data={notificationDetail}
+                            keyExtractor={(item, index) => item.key}
+                            renderItem={({ item, index }) =>
+                                <View style={{ flex: 1 }}>
+                                    <View style={{ height: hp('4.5%'), justifyContent: 'center', marginTop: hp('2%'), marginLeft: wp('2.5%'), marginRight: wp('2.5%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 0.015, backgroundColor: "#e68021", borderRadius: wp('1.2%') }}></View>
+                                        <View style={{ flex: 0.985, justifyContent: 'center' }}>
+                                            <Text style={{ color: color.lightGray, fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansRegular, marginLeft: wp('2%') }}>{item.Date}</Text>
+                                        </View>
+                                    </View>
+                                    {item.Result.map((Result, index) => (
+                                        <View>
+                                            <View style={{ height: hp('8%'), justifyContent: 'center', marginTop: hp('2%'), marginLeft: wp('3%'), marginRight: wp('3%'), flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Image source={require('./../../Asset/Icons/Appicon1.png')} style={{ height: wp('18%'), width: wp('18%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={{ flex: 0.5, justifyContent: 'center' }}>
+                                                    <Text style={{ color: color.lightGray, fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansRegular, }}>{Result.Title}</Text>
+                                                </View>
+                                                <View style={{ flex: 0.3, justifyContent: 'flex-end' }}>
+                                                    <Text style={{ color: color.lightGray, fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansRegular,textAlign:'right'}}>{Result.Time}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    ))}
+                                </View>}
+                        />
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+            </View>
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        NotificationAction: (Token) => {
+            dispatch(NotificationAction(Token));
+        },
+
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Notification);
+
+

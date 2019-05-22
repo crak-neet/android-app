@@ -1,0 +1,129 @@
+import React, { Component } from 'react';
+import { addNavigationHelpers, NavigationActions, PropTypes, connect } from './../../Asset/Libraries/NpmList';
+import { BackHandler, Alert, NetInfo } from 'react-native';
+import { Stack } from './navigationConfiguration';
+import { AllCancelTest_Action } from '../../Redux/Actions/AllCancelTest_Action';
+
+const getCurrentScreen = (navigationState) => {
+  if (!navigationState) {
+    return null
+  }
+  const route = navigationState.routes[navigationState.index]
+  if (route.routes) {
+    return getCurrentScreen(route)
+  }
+  return route.routeName
+}
+
+// ------------------------------------------------
+class StackNavigation extends Component {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    navigation: PropTypes.shape().isRequired,
+  };
+
+  // ---------------------------------------------------
+  constructor(props) {
+    super(props);
+    this.state = {
+
+    }
+    BackHandler.addEventListener('hardwareBackPress', this.backAction);
+  }
+
+  // ---------------------------------------------------
+
+  backAction = () => {
+
+    const { dispatch, navigation } = this.props;
+    const currentScreen = getCurrentScreen(navigation)
+    NetInfo.getConnectionInfo().then((connectionInfo) => {
+      if (connectionInfo.type == "none") {
+        Snackbar.show({
+          title: 'No internet connection. Please try again later.',
+          duration: Snackbar.LENGTH_SHORT,
+        });
+      } else {
+
+        if (currentScreen === 'Login') {
+          return false
+        } else if (currentScreen === 'Dashboard' || currentScreen === 'Login') {
+          Alert.alert(
+            'Confirmation',
+            'Are you are want to exit?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.onExit() },
+            ],
+            { cancelable: false }
+          )
+          return true
+        } else if (currentScreen === "MyProfile" || currentScreen === "ChangePassword" || currentScreen === "Notification" || currentScreen === "Revise_Search" ||
+
+          currentScreen === "AssessmentTest" || currentScreen === "ChapterTest" || currentScreen === "NEETModelTest" || currentScreen === "SpecialTest" || currentScreen === "SubjectTest" ||
+         
+          currentScreen === "AssessmentTest_Reports" || currentScreen === "ChapterTest_Reports" || currentScreen === "NEETModelTest_Reports" ||
+          currentScreen === "SpecialTest_Reports" || currentScreen === "SubjectTest_Reports" ||
+
+          currentScreen === "AssessmentTest_Scorecard" || currentScreen === "ChapterTest_Scorecard" || currentScreen === "NEETModelTest_Scorecard"
+          || currentScreen === "SpecialTest_Scorecard" || currentScreen === "SubjectTest_Scorecard") {
+          dispatch(NavigationActions.navigate({ routeName: 'Dashboard' }));
+          return true
+        }else if (currentScreen === 'AssessmentTest_Questions' || currentScreen === 'ChapterTest_Questions' || currentScreen === 'NEETModelTest_Questions' || currentScreen === 'SpecialTest_Questions' || currentScreen === 'SubjectTest_Questions') {
+          Alert.alert(
+            'Confirmation',
+            'Do you want to Cancel ?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.onExit() },
+            ],
+            { cancelable: false }
+          )
+          return true
+        } else if (currentScreen === "Retry") {
+          return false
+        }
+        dispatch(NavigationActions.back());
+      }
+    });
+    return true;
+  };
+  onExit() {
+    BackHandler.exitApp()
+  }
+  // -------------------------------------------------------
+
+  render() {
+
+    const { dispatch, navigation } = this.props;
+    return (
+      <Stack
+        ref={(ref) => { this.navigator = ref; }}
+        navigation={
+          addNavigationHelpers({
+            dispatch,
+            state: navigation,
+          })
+        }
+      />
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    navigation: state.stack
+  };
+}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+     
+//       AllCancelTest_Action: (Token, TestDetailId) => {
+//           dispatch(AllCancelTest_Action(Token, TestDetailId));
+//       },
+      
+
+//   }
+// }
+export default connect(mapStateToProps)(StackNavigation);
+

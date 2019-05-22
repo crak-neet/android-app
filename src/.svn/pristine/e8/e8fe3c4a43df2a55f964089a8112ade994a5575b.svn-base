@@ -1,0 +1,26 @@
+import React from 'react';
+import { StatusBar, View, Dimensions, Platform } from 'react-native';
+import {  LinearGradient } from './NpmList';
+import { fontSize, color, fontFamily, } from '../NeetStyles/fontsAndColors';
+import { wp, hp } from './ResponsiveScreen'
+
+const MyStatusBar = ({ backgroundColor, ...props }) => (
+    <View style={[{ height: hp('2%'),justifyContent:'center' }, { backgroundColor }]}>
+        <StatusBar translucent backgroundColor={backgroundColor} {...props} />
+    </View>
+);
+
+const Mystatusbar_Trans = () => {
+    return (
+        // <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[color.white, color.white]} style={{justifyContent: 'center' }}>
+        // {Platform.OS == "android" ?
+        //          <MyStatusBar barStyle="default" />
+              
+        //          : <MyStatusBar barStyle="light-content" />}
+        // </LinearGradient>
+
+        <View style={{height: hp('2%')}}/>
+    )
+}
+
+export { Mystatusbar_Trans };

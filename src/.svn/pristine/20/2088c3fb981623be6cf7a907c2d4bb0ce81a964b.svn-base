@@ -1,0 +1,66 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+
+export function Report_NEETTestAction(Token, FromDate, ToDate) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "FromDate": FromDate,
+                "ToDate": ToDate,
+            }),
+            method: 'post',
+            url: 'report/neetmodelreport'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var NEET_ReportDetail = JsonResponse.result
+                dispatch(getServiceSuccess(NEET_ReportDetail))
+            }else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure([]))
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+            
+        }).catch((error) => {
+            Snackbar.show({
+                title: "Please try again,Later",
+                duration: Snackbar.LENGTH_SHORT
+            });
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'Report_NEETTestAction',
+    }
+}
+export function getServiceSuccess(NEET_ReportDetail) {
+    return {
+        type: 'Report_NEETTestAction_SUCCESS',
+        NEET_ReportDetail
+        
+    }
+}
+export function getServiceFailure(NEET_ReportDetail) {
+    return {
+        type: 'Report_NEETTestAction_FAILURE',
+        NEET_ReportDetail
+    }
+}

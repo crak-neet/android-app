@@ -1,0 +1,81 @@
+import { StackNavigator } from './../../Asset/Libraries/NpmList';
+import RightToLeftTransition from './../../Asset/Libraries/RightLeftTransition';
+import Drawer from './../Drawer/DrawerConfiguration';
+import Retry from './../../Components/Extra_Modules/Retry';
+import Login from './../../Components/Registration_Modules/Login';
+import ForgotPassword from './../../Components/Registration_Modules/ForgotPassword';
+import Registration_1 from './../../Components/Registration_Modules/Registration_1';
+import Registration_2 from './../../Components/Registration_Modules/Registration_2';
+import Registration_3 from './../../Components/Registration_Modules/Registration_3';
+import OtpVerification from './../../Components/Registration_Modules/OtpVerification';
+
+import SplashScreen from '../../Components/Extra_Modules/SplashScreen';
+
+export const Stack = StackNavigator({
+
+    SplashScreen: {
+        screen: SplashScreen,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    Retry: {
+        screen: Retry,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+            drawerLockMode: 'locked-closed'
+        })
+    },
+    Login: {
+        screen: Login,
+        navigationOptions: {
+            header: null,
+            drawerLockMode: 'locked-closed'
+        },
+    },
+    ForgotPassword: {
+        screen: ForgotPassword,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    Registration_1: {
+        screen: Registration_1,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    Registration_2: {
+        screen: Registration_2,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    Registration_3: {
+        screen: Registration_3,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    OtpVerification: {
+        screen: OtpVerification,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+    Drawer: {
+        screen: Drawer,
+        navigationOptions: ({ navigation }) => ({
+            header: null,
+        })
+    },
+
+},
+    {
+        initialRouteName: 'SplashScreen',
+        transitionConfig: RightToLeftTransition,
+        navigationOptions: {
+            gesturesEnabled: false
+        },
+    }
+);

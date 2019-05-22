@@ -1,0 +1,60 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+export function StartSubjectTestAction(Token, SubjectId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SubjectId": SubjectId,
+            }),
+            method: 'post',
+            url: 'question/subjectwisetest'
+        }).then((JsonResponse) => {
+
+            if (JsonResponse.ResultStatus == "true") {
+
+                var subjectTestQuestions = JsonResponse.result
+                var _subjectIdSave = JsonResponse.SubjectId
+                dispatch(getServiceSuccess(subjectTestQuestions, _subjectIdSave))
+            }else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+            }
+            // Snackbar.show({
+            //     title: JsonResponse.Message,
+            //     duration: Snackbar.LENGTH_SHORT,
+            // });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'subjectWiseTest',
+    }
+}
+export function getServiceSuccess(subjectTestQuestions,_subjectIdSave) {
+    return {
+        type: 'subjectWiseTest_SUCCESS',
+        subjectTestQuestions, _subjectIdSave
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'subjectWiseTest_FAILURE',
+    }
+}

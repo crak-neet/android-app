@@ -1,0 +1,121 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+
+export function AllSummaryReportAction(Token, Summary, TypeId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SummaryId": Summary.toString(),
+                "TypeId": TypeId
+
+            }),
+            method: 'post',
+            url: 'summary/summarreport'
+        }).then((JsonResponse) => {
+
+            if (JsonResponse.ResultStatus == "true") {
+
+                // TypeId =>1 Chapter
+                // TypeId =>2 Subject
+                // TypeId =>3 Assessment
+                // TypeId =>4 Neet
+                // TypeId =>5 Special 
+                
+                if (JsonResponse.TypeId == "1") {
+                    var SummaryreportDetail = JsonResponse.Summary
+
+                    
+                    dispatch(getServiceSuccess(SummaryreportDetail))
+                    dispatch(ChapterTest_SummaryReports_Action())
+                } else  if (JsonResponse.TypeId == "2") {
+                    var SummaryreportDetail = JsonResponse.Summary
+                    dispatch(getServiceSuccess(SummaryreportDetail))
+
+                    dispatch(SubjectTest_SummaryReports_Action())
+                }else if (JsonResponse.TypeId == "3") {
+                    var SummaryreportDetail = JsonResponse.Summary
+                    dispatch(getServiceSuccess(SummaryreportDetail))
+
+                    dispatch(AssessmentTest_SummaryReports_Action())
+                } else if (JsonResponse.TypeId == "4") {
+                    var SummaryreportDetail = JsonResponse.Summary
+                    dispatch(getServiceSuccess(SummaryreportDetail))
+
+                    dispatch(NEETModelTest_SummaryReports_Action())
+                } else if (JsonResponse.TypeId == "5") {
+                    var SummaryreportDetail = JsonResponse.Summary
+                    dispatch(getServiceSuccess(SummaryreportDetail))
+
+                    dispatch(SpecialTest_SummaryReports_Action())
+                } 
+
+            } else {
+                dispatch(getServiceFailure())
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+
+export function getService() {
+    return {
+        type: 'AllSummaryReportAction',
+    }
+}
+export function getServiceSuccess(SummaryreportDetail) {
+    return {
+        type: 'AllSummaryReportAction_SUCCESS',
+        SummaryreportDetail
+
+    }
+}
+
+export function getServiceFailure() {
+    return {
+        type: 'AllSummaryReportAction_FAILURE',
+    }
+}
+
+
+
+
+export function ChapterTest_SummaryReports_Action() {
+    return {
+        type: 'ChapterTest_SummaryReports_Action',
+        
+
+    }
+}
+export function AssessmentTest_SummaryReports_Action() {
+    return {
+        type: 'AssessmentTest_SummaryReports_Action',
+        
+
+    }
+}export function NEETModelTest_SummaryReports_Action() {
+    return {
+        type: 'NEETModelTest_SummaryReports_Action',
+        
+
+    }
+}export function SpecialTest_SummaryReports_Action() {
+    return {
+        type: 'SpecialTest_SummaryReports_Action',
+        
+
+    }
+}export function SubjectTest_SummaryReports_Action() {
+    return {
+        type: 'SubjectTest_SummaryReports_Action',
+        
+
+    }
+}

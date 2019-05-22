@@ -1,0 +1,456 @@
+const initialState = {
+  isFetching: false,
+  error: false,
+  testDetail: '',
+  notificationDetail: [],
+  studentInfo: '',
+  fatherInfo: '',
+  motherInfo: '',
+  //-----------Pincode Details---------//
+  PincodeFetchDetails: '',
+
+  // --chapter wise test dropdown list
+  chapterList: [],
+
+  // chapter Report
+  chapterReportDetail:[],
+
+  // --Subject Wise test module
+  subjectList: [],
+  subjectTestQuestions: [],
+
+  //---Assesment Wise Test Module ----///
+  assesmentList: [],
+
+  // --Special test list dropdown
+  specialTestList: [],
+  specialTestList: [],
+  testDetail: "",
+
+  // ------------------question and answer images for zoom view--
+  QuestionZoomImage: '',
+  answerImageZoom: '',
+  //Special test--
+  specialTestAnswerImage:'',
+  questionImageZoomSpecial:'',
+
+  //---Special test Ranking-----///
+  rankingPosition: [],
+
+  //----Quick Reports Details-------///
+  testQuickReport: "",
+  quickReportSubject: "",
+  quickReportAssesment: "",
+  quickReportModelTest: "",
+  quickReportSpecialTest: "",
+  ChapterQuestions:[]
+};
+
+export default function NeetReducer(state = initialState, action) {
+  switch (action.type) {
+
+    // ----------------------------------- Student Registration and Login ----------------------------------------//
+    case "onLoginAction":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onLoginAction_SUCCESS":
+      return {
+        ...state,
+
+      };
+    case "onLoginAction_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ----------------------------------- Student Registration Pincode Fetch Details----------------------------------------//
+    case "onPincodeDetails":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onPincodeDetails_SUCCESS":
+      return {
+        ...state,
+        PincodeFetchDetails: action.PincodeFetchDetails
+      };
+    case "onPincodeDetails_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Dashboard Student Test Details--------------------------------------- 
+    case "testDetailDashboard":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "testDetailDashboard_SUCCESS":
+      return {
+        ...state,
+        testDetail: action.testDetail
+      };
+    case "testDetailDashboard_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Notification Details--------------------------------------- 
+    case "notificationDetail":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "notificationDetail_SUCCESS":
+      return {
+        ...state,
+        notificationDetail: action.notificationDetail
+
+      };
+    case "notificationDetail_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Profile Details--------------------------------------- 
+    case "profileDetail":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "profileDetail_SUCCESS":
+      return {
+        ...state,
+        studentInfo: action.studentInfo,
+        fatherInfo: action.fatherInfo,
+        motherInfo: action.motherInfo
+      };
+    case "profileDetail_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+
+    // ---------------------------------------------chapter wise test modules--------------------------------------- 
+    case "chaptersLists":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "chaptersLists_SUCCESS":
+      return {
+        ...state,
+        chapterList: action.chapterList,
+      };
+    case "chaptersLists_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Subject wise test modules--------------------------------------- 
+    case "subjectDropdown":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "subjectDropdown_SUCCESS":
+      return {
+        ...state,
+        subjectList: action.subjectList,
+      };
+    case "subjectDropdown_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+    // 
+    case "subjectWiseTest":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "subjectWiseTest_SUCCESS":
+      return {
+        ...state,
+        subjectTestQuestions: action.subjectTestQuestions,
+      };
+    case "subjectWiseTest_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ---------------------------------------------Assesment wise test modules--------------------------------------- 
+    case "assesmentLists":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "assesmentLists_SUCCESS":
+      return {
+        ...state,
+        assesmentList: action.assesmentList,
+      };
+    case "assesmentLists_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // -------------------------------Special test module----------------------------------------------------------
+
+    case "specialTestLists":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "specialTestLists_SUCCESS":
+      return {
+        ...state,
+        specialTestList: action.specialTestList,
+      };
+    case "specialTestLists_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // ----------------------------Question and images module-----------------------------------------
+
+    case "questionImage":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "questionImage_SUCCESS":
+      return {
+        ...state,
+        QuestionZoomImage: action.questionImage,
+      };
+    case "questionImage_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // 
+    case "answerImage":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "answerImage_SUCCESS":
+      return {
+        ...state,
+        answerImageZoom: action.answerImageZoom,
+      };
+    case "answerImage_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+      // special test
+      
+      case "answerImageSpecialTest":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "answerImageSpecialTest_SUCCESS":
+      return {
+        ...state,
+        specialTestAnswerImage: action.specialTestZoomImage,
+      };
+    case "answerImageSpecialTest_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    // 
+    case "imageQuesSpecialTest":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "imageQuesSpecialTest_SUCCESS":
+      return {
+        ...state,
+        questionImageZoomSpecial: action.imageQuesSpecialTest,
+      };
+    case "imageQuesSpecialTest_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+
+    // -------------------------------Special test module----------------------------------------------------------
+
+    case "onRegistration":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onRegistration_SUCCESS":
+      return {
+        ...state,
+        studentregistration_Deatils: action.studentregistration_Deatils,
+      };
+    case "onRegistration_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    //-----------------------Chapter Quick Report------------------- //     
+    case "onTestReports":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onTestReports_SUCCESS":
+      return {
+        ...state,
+        testQuickReport: action.testQuickReport,
+      };
+    case "onTestReports_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+      // chaper Report
+      
+      case "onReportForChapter":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onReportForChapter_SUCCESS":
+      return {
+        ...state,
+        chapterReportDetail: action.chapterReportDetail,
+      };
+    case "onReportForChapter_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    //-----------------------Subject Quick Report------------------- //     
+    case "onQuickReportSubject":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onQuickReportSubject_SUCCESS":
+      return {
+        ...state,
+        quickReportSubject: action.quickReportSubject,
+      };
+    case "onQuickReportSubject_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    //-----------------------Assesment Quick Report------------------- //     
+    case "onQuickReportAssesment":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onQuickReportAssesment_SUCCESS":
+      return {
+        ...state,
+        quickReportAssesment: action.quickReportAssesment,
+      };
+    case "onQuickReportAssesment_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    //-----------------------Model Test Quick Report------------------- //     
+    case "onQuickReportModelTest":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onQuickReportModelTest_SUCCESS":
+      return {
+        ...state,
+        quickReportModelTest: action.quickReportModelTest,
+      };
+    case "onQuickReportModelTest_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    //-----------------------Model Test Quick Report------------------- //     
+    case "onQuickReportSpecialTest":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onQuickReportSpecialTest_SUCCESS":
+      return {
+        ...state,
+        quickReportSpecialTest: action.quickReportSpecialTest,
+      };
+    case "onQuickReportSpecialTest_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+    //-----------------------Special Test Ranking Position Module------------------- //     
+    case "onRankingPosition":
+      return {
+        ...state,
+        isFetching: true
+      };
+    case "onRankingPosition_SUCCESS":
+      return {
+        ...state,
+        rankingPosition: action.rankingPosition,
+      };
+    case "onRankingPosition_FAILURE":
+      return {
+        ...state,
+        isFetching: false
+      };
+
+      //-----------------------Model Test Quick Report------------------- //     
+    case "startChapterWiseTest":
+    return {
+      ...state,
+      isFetching: true
+    };
+  case "startChapterWiseTest_SUCCESS":
+    return {
+      ...state,
+      ChapterQuestions: action.ChapterQuestions,
+    };
+  case "startChapterWiseTest_FAILURE":
+    return {
+      ...state,
+      isFetching: false
+    };
+      
+
+    default:
+      return state;
+  }
+}

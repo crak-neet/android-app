@@ -1,0 +1,249 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    Modal,
+    ScrollView,
+    Platform,
+    AsyncStorage
+} from 'react-native';
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import { Header_BackIcon } from '../../Asset/Libraries/index'
+import Button from '../../Asset/Libraries/Button';
+import ButtonRed from '../../Asset/Libraries/ButtonRed';
+
+import { connect, GridView, debounce } from '../../Asset/Libraries/NpmList';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+
+import { QuickReportChapterAction } from '../../Redux/Actions/QuickReportChapterAction';
+import { QuickReportSubjectAction } from './../../Redux/Actions/QuickReportSubjectAction';
+import { QuickReportAssesmentAction } from './../../Redux/Actions/QuickReportAssesmentAction';
+import { QuickReportSpcialAction } from './../../Redux/Actions/QuickReportSpcialAction';
+
+import { SkiplistArray } from './../../Redux/Actions/SkiplistArray';
+
+class SkippedTest_Module extends Component {
+    constructor() {
+        super();
+        this.state = {
+            token: '',
+            SubmitModel: false,
+        }
+        this.backIconPress = debounce(this.backIconPress.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.setState({
+                    token: Token
+                })
+            }
+        })
+    }
+
+
+    backIconPress() {
+        this.props.navigation.navigate("Dashboard")
+    }
+
+
+    SkiplistArray(SkiplistArray) {
+        var QuestionNumber = SkiplistArray.QuestionNumber
+        var Skiplist_QuestionNumber = --QuestionNumber
+        this.props.SkiplistArray(Skiplist_QuestionNumber)
+
+        const { Skiplist_data } = this.props.NeetReducer
+
+        if (Skiplist_data.TestTypeId == 1) {
+            this.props.navigation.navigate("ChapterTest_Questions")
+        } else if (Skiplist_data.TestTypeId == 2) {
+            this.props.navigation.navigate("SubjectTest_Questions")
+        } else if (Skiplist_data.TestTypeId == 3) {
+            this.props.navigation.navigate("AssessmentTest_Questions")
+
+        } else if (Skiplist_data.TestTypeId == 4) {
+            this.props.navigation.navigate("NEETModelTest_Questions")
+
+        } else if (Skiplist_data.TestTypeId == 5) {
+            this.props.navigation.navigate("SpecialTest_Questions")
+        }
+
+    }
+
+
+    onSubmit_Test() {
+        this.setState({ SubmitModel: true, })
+    }
+
+    onConfirmSubmit() {
+        // TestTypeId :
+        // 1->Chapter Test,
+        // 2->Subject Test,
+        // 3->Assesment Test,
+        // 4->Neet Model Test,
+        // 5->Special Test
+
+        const { Skiplist_data } = this.props.NeetReducer
+
+        if (Skiplist_data.TestTypeId == 1) {
+            this.props.QuickReportChapterAction(this.state.token, Skiplist_data.TestId)
+
+        } else if (Skiplist_data.TestTypeId == 2) {
+            this.props.QuickReportSubjectAction(this.state.token, Skiplist_data.TestId)
+            // alert("server underconstruction")
+        } else if (Skiplist_data.TestTypeId == 3) {
+            this.props.QuickReportAssesmentAction(this.state.token, Skiplist_data.TestId)
+            // alert("server underconstruction")
+
+        } else if (Skiplist_data.TestTypeId == 4) {
+            alert("server underconstruction")
+
+        } else if (Skiplist_data.TestTypeId == 5) {
+            // alert("server underconstruction")
+            this.props.QuickReportSpcialAction(this.state.token, Skiplist_data.TestId)
+
+        }
+
+        this.setState({ SubmitModel: false, })
+    }
+
+    onRequestClose() {
+        this.setState({
+
+            SubmitModel: false,
+        });
+    }
+
+
+    render() {
+
+        const { Skiplist } = this.props.NeetReducer
+
+        return (
+            <View style={{ flex: 1, backgroundColor: "#F7F7F7", }}>
+                <Header_BackIcon onPressLeftIcon={() => this.props.skipDebounce ? this.props.backIconPress : this.backIconPress()} HeaderText='Skipped Questions' />
+
+
+                <View style={{ flex: 1, backgroundColor: color.white, margin: wp("3%"), borderColor: color.lightGray, borderWidth: wp("0.2%") }}>
+                    <View style={{ height: wp("3%"), justifyContent: 'center' }} />
+
+                    <View style={{ height: wp("7%"), justifyContent: 'center', marginLeft: wp("2%") }}>
+                        <Text numberOfLines={1} style={{ fontSize: fontSize.lightMedium, backgroundColor: 'transparent', fontFamily: fontFamily.OpenSansSemiBold, textAlign: "justify", color: color.black }}>Confirmtion</Text>
+                    </View>
+
+
+
+                    <View style={{ height: wp("1%"), justifyContent: 'center' }} />
+
+                    <View style={{ flex: 0.15, justifyContent: 'center', marginLeft: wp("5%"), marginRight: wp("5%") }}>
+                        <Text style={{ fontSize: hp("2%"), fontFamily: fontFamily.OpenSansBold, textAlign: "justify", color: color.black }}>Please note you have skipped below Questions</Text>
+                    </View>
+
+                    <View style={{ height: wp("1%"), justifyContent: 'center' }} />
+                    <View style={{ flex: 0.75, justifyContent: 'center', }}>
+{
+    Skiplist == null ?
+    <View style={{ flex: 0.15, justifyContent: 'center', marginLeft: wp("5%"), marginRight: wp("5%") }}>
+    <Text style={{ fontSize: hp("2%"), fontFamily: fontFamily.OpenSansBold, textAlign: "justify", color: color.black }}>Click Submit to view your results</Text>
+</View>
+    :
+    <GridView
+    style={{ paddingTop: wp("3%"), flex: 1 }}
+    itemWidth={wp("24%")}
+    items={Skiplist}
+    enableEmptySections={true}
+    renderItem={Skiplist => (
+
+
+
+        <TouchableOpacity onPress={() => this.SkiplistArray(Skiplist)} style={{ height: wp("12%"), justifyContent: 'center', alignItems: 'center', borderColor: color.lightGray, borderWidth: wp("0.2%"), backgroundColor: color.white, marginLeft: wp("2%"), marginRight: wp("2%") }}>
+            {/* <TouchableOpacity style={{ height: wp('5%'), width: wp('5%'), borderRadius: wp('2.5%'), backgroundColor: '#3ce33d', zIndex: 1000, top: wp('6%'), left: wp('10%') }} /> */}
+            <View style={{ height: wp("7%"), justifyContent: 'center' }}>
+                <Text numberOfLines={1} style={{ fontSize: fontSize.lightMedium, backgroundColor: 'transparent', fontFamily: fontFamily.OpenSansRegular, textAlign: 'center', color: color.black }}>{Skiplist.QuestionName}</Text>
+            </View>
+        </TouchableOpacity>
+
+    )}
+/>
+}
+                       
+                    </View>
+
+                    <View style={{ height: wp("3%"), justifyContent: 'center' }} />
+
+                    <View style={{ flex: 0.1, justifyContent: 'center' }}>
+                        <Button OnButtonClicked={() => this.onSubmit_Test()} ButtonText='Submit Test' />
+                    </View>
+
+                    <View style={{ height: wp("3%"), justifyContent: 'center' }} />
+                </View>
+
+                <Modal
+                    animationType='fade'
+                    transparent={true}
+                    visible={this.state.SubmitModel}
+                    onRequestClose={() => { this.setState({ SubmitModel: false }) }}>
+                    <TouchableOpacity activeOpacity={0} onPressOut={() => this.onRequestClose()} style={{ flex: 1, alignSelf: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        <View style={{ height: hp('100%'), width: wp('100%'), justifyContent: 'center', alignItems: 'center', alignSelf: 'center', backgroundColor: 'transparent' }}>
+                            <TouchableWithoutFeedback>
+                                <View style={{ height: hp('33%'), width: wp('80%'), backgroundColor: color.white, borderRadius: hp('1.5%'), elevation: 2 }}>
+                                    <View style={{ height: hp('7%'), justifyContent: 'center', marginLeft: wp('3%'), marginRight: wp('3%'), borderBottomColor: color.appGreen, borderBottomWidth: hp('0.15%') }}>
+                                        <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1.5%') }}>Confirmation</Text>
+                                    </View>
+                                    <View style={{ height: hp('4%'), justifyContent: 'center', marginTop: hp('2%') }}>
+                                        <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Do you want to submit?</Text>
+                                    </View>
+                                    <View style={{ marginLeft: wp('10%'), marginRight: wp('10%'), marginTop: hp('2%') }}>
+
+                                        <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onConfirmSubmit : this.onConfirmSubmit()} ButtonText='Ok' />
+
+                                        <ButtonRed OnButtonClicked={() => this.props.skipDebounce ? this.props.onRequestClose : this.onRequestClose()} ButtonText='Cancel' />
+                                        <View style={{ height: hp('1%') }}></View>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            </View>
+        );
+    }
+}
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+
+        SkiplistArray: (QuestionNumber, ) => {
+            dispatch(SkiplistArray(QuestionNumber));
+        },
+        QuickReportChapterAction: (Token, TestDetailId) => {
+            dispatch(QuickReportChapterAction(Token, TestDetailId));
+        },
+        QuickReportSubjectAction: (Token, TestDetailId) => {
+            dispatch(QuickReportSubjectAction(Token, TestDetailId));
+        },
+        QuickReportAssesmentAction: (Token, TestDetailId) => {
+            dispatch(QuickReportAssesmentAction(Token, TestDetailId));
+        },
+        QuickReportSpcialAction: (Token, TestDetailId) => {
+            dispatch(QuickReportSpcialAction(Token, TestDetailId));
+        },
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(SkippedTest_Module);
+
+

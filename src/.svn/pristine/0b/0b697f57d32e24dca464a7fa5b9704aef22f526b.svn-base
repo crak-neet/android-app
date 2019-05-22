@@ -1,0 +1,142 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    Platform,
+    AsyncStorage
+} from 'react-native';
+
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, LinearGradient, connect } from '../../Asset/Libraries/NpmList';
+import { Header_Drawer, isIOS } from '../../Asset/Libraries/index'
+import { DashboardTestDetailAction } from './../../Redux/Actions/DashboardTestDetailAction';
+import { DropdownSubjectAction } from '../../Redux/Actions/DropdownSubjectAction';
+class Dashboard extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+
+        }
+        this.onNotifiaction = debounce(this.onNotifiaction.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.props.DashboardTestDetailAction(Token)
+                this.props.DropdownSubjectAction(Token)
+            }
+        })
+    }
+    componentDidMount() {
+
+    }
+    onNotifiaction() {
+        this.props.navigation.navigate("Notification")
+    }
+
+    render() {
+
+        const { testDetail } = this.props.NeetReducer
+        // if(testDetail != ''){
+        //     console.error(testDetail)
+        // }
+      
+        return (
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={{ flex: 1, backgroundColor: color.white }}>
+                    <Header_Drawer onPressLeftIcon={() => this.props.navigation.navigate('DrawerOpen')} HeaderText='Dashboard' onPressRightIcon={() => this.props.skipDebounce ? this.props.onNotifiaction : this.onNotifiaction()} />
+                    <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.onNotifiaction : this.onNotifiaction()} style={{ height: wp('5.5%'), width: wp('5.5%'), borderRadius: wp('12%'), backgroundColor: '#e68021', justifyContent: 'center', alignItems: 'center', zIndex: 1000, top:isIOS ?  hp('3%') :hp("4%"), right: wp('2.5%'), position: 'absolute' }}>
+                        <Text style={{ fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular, color: color.white }}>{testDetail.NotificationCount}</Text>
+                    </TouchableOpacity>
+                    <View>
+                        <View style={{ height: hp('20%'), justifyContent: 'center', alignItems: 'center' }} >
+                            <Image source={require('../../Asset/Images/logo.png')} style={{ height: wp('24%'), width: wp('75%') }} />
+                        </View>
+
+                        <View style={{ height: hp('11%'), flexDirection: 'row', marginLeft: wp('8%'), marginRight: wp('8%'), borderRadius: wp('3%'), borderColor: color.appGreen, borderWidth: wp('0.2%') }} >
+                            <View style={{ flex: 0.3, justifyContent: 'center', alignItems: 'center', backgroundColor: color.appGreen, borderTopLeftRadius: wp('3%'), borderBottomLeftRadius: wp('3%') }}>
+                                <Image source={require('../../Asset/Icons/obook.png')} style={{ height: hp('6%'), width: hp('6%'), tintColor: color.white }} />
+                            </View>
+                            <View style={{ flex: 0.7, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, textAlign: 'center' }}>Chapter Tests</Text>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: '#e68021', fontFamily: fontFamily.OpenSansBold, textAlign: 'center', marginTop: hp('0.5%') }}>{testDetail.chapterTest}</Text>
+                            </View>
+                        </View>
+
+                        <View style={{ height: hp('11%'), flexDirection: 'row', marginLeft: wp('8%'), marginRight: wp('8%'), borderRadius: wp('3%'), borderColor: color.appGreen, borderWidth: wp('0.2%'), marginTop: hp('2%') }} >
+                            <View style={{ flex: 0.3, justifyContent: 'center', alignItems: 'center', backgroundColor: color.appGreen, borderTopLeftRadius: wp('3%'), borderBottomLeftRadius: wp('3%') }}>
+                                <Image source={require('../../Asset/Icons/book.png')} style={{ height: hp('6.5%'), width: hp('6.5%'), tintColor: color.white }} />
+                            </View>
+                            <View style={{ flex: 0.7, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, textAlign: 'center' }}>Subject Tests</Text>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: '#e68021', fontFamily: fontFamily.OpenSansBold, textAlign: 'center', marginTop: hp('0.5%') }}>{testDetail.subjectTest}</Text>
+                            </View>
+                        </View>
+
+                        <View style={{ height: hp('11%'), flexDirection: 'row', marginLeft: wp('8%'), marginRight: wp('8%'), borderRadius: wp('3%'), borderColor: color.appGreen, borderWidth: wp('0.2%'), marginTop: hp('2%') }} >
+                            <View style={{ flex: 0.3, justifyContent: 'center', alignItems: 'center', backgroundColor: color.appGreen, borderTopLeftRadius: wp('3%'), borderBottomLeftRadius: wp('3%') }}>
+                                <Image source={require('../../Asset/Icons/test98.png')} style={{ height: hp('6%'), width: hp('6%'), tintColor: color.white }} />
+                            </View>
+                            <View style={{ flex: 0.7, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, textAlign: 'center' }}>Assesment Tests</Text>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: '#e68021', fontFamily: fontFamily.OpenSansBold, textAlign: 'center', marginTop: hp('0.5%') }}>{testDetail.assesmentTest}</Text>
+                            </View>
+                        </View>
+
+                        <View style={{ height: hp('11%'), flexDirection: 'row', marginLeft: wp('8%'), marginRight: wp('8%'), borderRadius: wp('3%'), borderColor: color.appGreen, borderWidth: wp('0.2%'), marginTop: hp('2%') }} >
+                            <View style={{ flex: 0.3, justifyContent: 'center', alignItems: 'center', backgroundColor: color.appGreen, borderTopLeftRadius: wp('3%'), borderBottomLeftRadius: wp('3%') }}>
+                                <Image source={require('../../Asset/Icons/test1.png')} style={{ height: hp('6%'), width: hp('6%'), tintColor: color.white }} />
+                            </View>
+                            <View style={{ flex: 0.7, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, textAlign: 'center' }}>Neet Model Tests</Text>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: '#e68021', fontFamily: fontFamily.OpenSansBold, textAlign: 'center', marginTop: hp('0.5%') }}>{testDetail.neetModelTest}</Text>
+                            </View>
+                        </View>
+
+                        <View style={{ height: hp('11%'), flexDirection: 'row', marginLeft: wp('8%'), marginRight: wp('8%'), borderRadius: wp('3%'), borderColor: color.appGreen, borderWidth: wp('0.2%'), marginTop: hp('2%') }} >
+                            <View style={{ flex: 0.3, justifyContent: 'center', alignItems: 'center', backgroundColor: color.appGreen, borderTopLeftRadius: wp('3%'), borderBottomLeftRadius: wp('3%') }}>
+                                <Image source={require('../../Asset/Icons/test2.png')} style={{ height: hp('6%'), width: hp('6%'), tintColor: color.white }} />
+                            </View>
+                            <View style={{ flex: 0.7, justifyContent: 'center' }}>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, textAlign: 'center' }}>Subject Tests</Text>
+                                <Text style={{ fontSize: fontSize.lightMedium, color: '#e68021', fontFamily: fontFamily.OpenSansBold, textAlign: 'center', marginTop: hp('0.5%') }}>{testDetail.specialTest}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
+
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        DashboardTestDetailAction: (Token) => {
+            dispatch(DashboardTestDetailAction(Token));
+        },
+        DropdownSubjectAction: (Token) => {
+            dispatch(DropdownSubjectAction(Token));
+        },
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+
+

@@ -1,0 +1,141 @@
+import React, { Component } from 'react';
+import {
+    View,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    AsyncStorage
+} from 'react-native';
+
+
+import { fontSize, color, fontFamily, width, height, } from '../../Asset/NeetStyles/fontsAndColors';
+import Button from '../../Asset/Libraries/Button';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, connect, ModalPicker } from '../../Asset/Libraries/NpmList';
+import { Header_Only_Drawer } from '../../Asset/Libraries/index'
+import { DropdownSpecialTestAction } from './../../Redux/Actions/DropdownSpecialTestAction';
+import { StartSpecialTestAction } from './../../Redux/Actions/StartSpecialTestAction';
+import { SkiplistArrayReducer_ClearAction } from './../../Redux/Actions/SkiplistArrayReducer_ClearAction';
+
+class SpecialTest extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            specialTestId: '',
+            Token: '',
+            SpecialTestName: '',
+            ReducerClear: 0
+
+
+        }
+        this.onStartTest = debounce(this.onStartTest.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+        this.backIconPress = debounce(this.backIconPress.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, token) => {
+            if (token) {
+                this.props.DropdownSpecialTestAction(token)
+                this.setState({
+                    Token: token
+                })
+            }
+        })
+    }
+    componentDidMount() {
+        this.props.SkiplistArrayReducer_ClearAction(this.state.ReducerClear)
+    }
+    onStartTest() {
+        if (this.state.specialTestId == "") {
+            Snackbar.show({
+                title: "Kindy choose any Test",
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        }
+        else {
+            this.props.StartSpecialTestAction(this.state.Token, this.state.specialTestId, this.state.SpecialTestName)
+            // this.props.navigation.navigate("SpecialTest_Questions")
+        }
+
+    }
+    backIconPress() {
+        this.props.navigation.goBack()
+    }
+    render() {
+        const { specialTestList } = this.props.NeetReducer
+        return (
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={{ flex: 1, backgroundColor: color.white, }}>
+
+                    <Header_Only_Drawer onPressLeftIcon={() => this.props.navigation.navigate('DrawerOpen')} HeaderText='Special Test' />
+                    <Image source={require('./../../Asset/Images/NeetBg.png')} style={{ height: hp('85%'), marginTop: hp('8%'), marginLeft: wp('10%'), width: wp('90%'), position: 'absolute' }} />
+
+                    <View style={{ flex: 0.1, justifyContent: 'center' }} />
+                    <View style={{ flex: 0.35, justifyContent: 'center', alignItems: 'center', }}>
+                        <Image source={require('../../Asset/Icons/test2.png')} style={{ height: wp('35%'), width: wp('35%'), tintColor: color.appGreen }} />
+                    </View>
+
+                    <View style={{ flex: 0.15, justifyContent: 'center', marginLeft: wp('10%'), marginRight: wp('10%') }}>
+                        <View style={{ height: hp('7%'), flexDirection: 'row', borderRadius: hp('3.5%'), borderColor: color.lightGray, borderWidth: hp('0.2%'), }}>
+                            <View style={{ flex: 0.15, justifyContent: 'center', alignItems: 'center' }}>
+                                <Image source={require('../../Asset/Icons/books-stack-of-three.png')} style={{ height: wp('6%'), width: wp('6%'), tintColor: color.lightGray }} />
+                            </View>
+                            <View style={{ flex: 0.80, justifyContent: 'center' }}>
+                                <ModalPicker
+                                    data={specialTestList}
+                                    initValue={"Select Special Test"}
+                                    optionStyle={{ paddingTop: height / 100 * 2, borderBottomWidth: 1, borderBottomColor: '#ccc', justifyContent: 'center', }}
+                                    cancelContainer={{ borderRadius: 0, width: width, top: (height - height / 100 * 75) / 2 }}
+                                    cancelStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                                    cancelTextStyle={{ fontSize: fontSize.Medium, fontFamily: 'OpenSans-Regular', letterSpacing: width / 100 * 0.15, color: '#fff', }}
+                                    overlayStyle={{ width: width, height: height, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center' }}
+                                    optionTextStyle={{ fontSize: fontSize.Small, padding: width / 100 * 0.5, color: '#393939', fontFamily: 'OpenSans-Regular', letterSpacing: width / 100 * 0.15 }}
+                                    sectionStyle={{ borderBottomWidth: 1, borderBottomColor: '#ccc', justifyContent: 'center' }}
+                                    sectionTextStyle={{ fontSize: fontSize.Small, color: '  ', fontFamily: 'OpenSans-Regular', letterSpacing: width / 100 * 0.15 }}
+                                    selectTextStyle={{ color: this.state.specialTestId == "" ? color.lightGray : color.black, fontSize: fontSize.Small, fontFamily: 'OpenSans-Regular', letterSpacing: width / 100 * 0.15 }}
+                                    selectStyle={{ height: height / 100 * 5, flex: 0, borderColor: '#fff', justifyContent: 'center', borderWidth: 0, padding: 0, borderRadius: 0 }}
+                                    onChange={(option) => { this.setState({ specialTestId: option.SpecialListId, SpecialTestName: option.label }) }}
+                                />
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{ flex: 0.1, justifyContent: 'center' }}>
+                        <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onStartTest : this.onStartTest()} ButtonText='Start Test' />
+                    </View>
+                    <View style={{ flex: 0.2, justifyContent: 'center' }} />
+                </View>
+            </TouchableWithoutFeedback>
+
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        DropdownSpecialTestAction: (Token) => {
+            dispatch(DropdownSpecialTestAction(Token));
+        },
+        StartSpecialTestAction: (Token, SpecialTestId, SpecialTestName) => {
+            dispatch(StartSpecialTestAction(Token, SpecialTestId, SpecialTestName))
+        },
+        SkiplistArrayReducer_ClearAction: (ReducerClear) => {
+            dispatch(SkiplistArrayReducer_ClearAction(ReducerClear));
+        },
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(SpecialTest);

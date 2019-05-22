@@ -1,0 +1,24 @@
+import React, { Component } from "react";
+class Validations extends Component {
+  static validateEmail = Email => {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(Email);
+  };
+  static validateName = Name => {
+    var re =/^(?=.*[a-zA-Z])(?=.|[0-9])[a-zA-Z0-9._ ]+$/;
+    return re.test(Name);
+  };
+  static validateClass = Class => {
+    var re =/^[a-zA-Z0-9]*$/;
+    return re.test(Class);
+  };
+
+  static validate_SC = special => {
+    var nospecial = /^[^*|\":<>[\]{}`\\()';!@#&$%1234567890-=+.!,?~`]+$/;
+    return nospecial.test(special);
+  };
+
+}
+
+
+export { Validations };

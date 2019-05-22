@@ -1,0 +1,51 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function StartChapterTestAction(Token, SubjectId, ChapterId) {
+
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SubjectId": SubjectId,
+                "ChapterId": ChapterId
+            }),
+            method: 'post',
+            url: 'question/chapterwisetest'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var ChapterQuestions = JsonResponse.result
+                var SubjectId = JsonResponse.SubjectId
+                var ChapterId = JsonResponse.ChapterId
+                dispatch(getServiceSuccess(ChapterQuestions,SubjectId,ChapterId))
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+        }).catch((error) => {
+
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'startChapterWiseTest',
+    }
+}
+export function getServiceSuccess(ChapterQuestions,SubjectId,ChapterId) {
+    return {
+        type: 'startChapterWiseTest_SUCCESS',
+        ChapterQuestions,SubjectId,ChapterId,
+
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'startChapterWiseTest_FAILURE',
+    }
+}

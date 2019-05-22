@@ -1,0 +1,61 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+export function Report_SubjectestAction(Token, FromDate, ToDate, SubjectId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "FromDate": FromDate,
+                "ToDate": ToDate,
+                "SubjectId": SubjectId
+            }),
+            method: 'post',
+            url: 'report/subjectreport'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var SubjectReportDetail = JsonResponse.result
+                dispatch(getServiceSuccess(SubjectReportDetail))
+            }else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure([]))
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'Report_SubjectestAction',
+    }
+}
+export function getServiceSuccess(SubjectReportDetail) {
+    return {
+        type: 'Report_SubjectestAction_SUCCESS',
+        SubjectReportDetail
+        
+    }
+}
+export function getServiceFailure(SubjectReportDetail) {
+    return {
+        type: 'Report_SubjectestAction_FAILURE',
+        SubjectReportDetail
+    }
+}

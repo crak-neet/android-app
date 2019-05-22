@@ -1,0 +1,157 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    AsyncStorage,
+    Platform,
+} from 'react-native';
+
+
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import Button from '../../Asset/Libraries/Button';
+import { textInputView, backIcon, title } from '../../Asset/NeetStyles/commonStyles';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, connect } from '../../Asset/Libraries/NpmList';
+import { OtpVerificationAction } from '../../Redux/Actions/OtpVerificationAction';
+import { OtpResendAction } from '../../Redux/Actions/OtpResendAction';
+
+class OtpVerification extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            OtpValue: '',
+            token: '6175729972nq8m4mVuGAi7rUeR3HcNJNavdxB6ILtbWPeO8zSCYlRGIYaA4N',
+        }
+        this.onValidate = debounce(this.onValidate.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+        this.backIconPress = debounce(this.backIconPress.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+        this.onResendOTP = debounce(this.onResendOTP.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.setState({
+                    token: Token
+                });
+                // this.props.NotificationAction(Token)
+            }
+        })
+    }
+
+    componentDidMount() {
+
+    }
+    onValidate() {
+        if (this.state.OtpValue == "") {
+            Snackbar.show({
+                title: "Enter Your OTP",
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        } else {
+            this.props.OtpVerificationAction(this.state.OtpValue, this.state.token)
+        }
+    }
+    onResendOTP() {
+        this.props.OtpResendAction(this.state.token)
+        // Snackbar.show({
+        //     title: "OTP Resended To Your Number",
+        //     duration: Snackbar.LENGTH_SHORT,
+        // });
+    }
+    backIconPress() {
+        this.props.navigation.goBack()
+    }
+    render() {
+
+        // var spinner = false;
+        // if (isFetchingLogin == true) {
+        //     spinner = <Spinner visibility={true} />
+        // } else {
+        //     spinner = false
+        // }
+        return (
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+                <View style={{ flex: 1, backgroundColor: color.white }}>
+                    {/* <MystatusBar_Tran /> */}
+                    <View style={{ height: hp('8%'), flexDirection: 'row', }}>
+                        <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.backIconPress : this.backIconPress()} style={backIcon.iconView}>
+                            <Image source={require('../../Asset/Icons/left-arrow.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.lightGray }} />
+                        </TouchableOpacity>
+                        <View style={{ flex: 6, justifyContent: 'center' }}>
+                            <Text style={{ fontSize: fontSize.Medium, fontFamily: fontFamily.OpenSansBold, textAlign: 'center' }}>OTP Verification</Text>
+                        </View>
+                        <View style={{ flex: 2, }}>
+                        </View>
+                    </View>
+                    <View style={{ height: hp('17%'), justifyContent: 'center', alignItems: 'center', marginTop: hp('10%') }}>
+                        <Image source={require('../../Asset/Icons/hand-holding-a-mobile-phone.png')} style={{ height: hp('16%'), width: hp('16%'), tintColor: color.appGreen }} />
+                    </View>
+                    <View style={{ height: hp('4%'), justifyContent: 'center', alignItems: 'center', marginLeft: wp('5%'), marginRight: wp('5%'), marginTop: hp('2%') }}>
+                        <Text style={{ fontSize: fontSize.Small, color: color.lightGray, textAlign: 'center', fontFamily: fontFamily.OpenSansRegular }}>One Time Password Send To</Text>
+                    </View>
+                    <View style={{ height: hp('4%'), justifyContent: 'center', alignItems: 'center', marginTop: hp('1%') }}>
+                        <Text style={{ fontSize: fontSize.Small, color: color.black, textAlign: 'center', fontFamily: fontFamily.OpenSansSemiBold }}>9876543210</Text>
+                    </View>
+                    <View style={[textInputView.View, { marginTop: hp('3.5%') }]}>
+                        <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+                            <Image source={require('../../Asset/Icons/smartphone-with-email.png')} style={textInputView.textInputIconStyle} />
+                        </View>
+                        <View style={{ flex: 8, justifyContent: 'center' }}>
+                            <TextInput
+                                placeholder='Enter your OTP'
+                                keyboardType='numeric'
+                                ref='OtpValue'
+                                underlineColorAndroid='transparent'
+                                style={{ fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}
+                                onChangeText={(OtpValue) => this.setState({ OtpValue })}
+                            />
+                        </View>
+                    </View>
+                    <View style={{ height: hp('1.5%') }}></View>
+                    <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onValidate : this.onValidate()} ButtonText='Validate' />
+
+                    <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.onResendOTP : this.onResendOTP()} style={{ height: hp('4%'), justifyContent: 'center', marginTop: hp('3%') }}>
+                        <Text style={{ fontSize: fontSize.Small, color: color.lightGray, fontFamily: fontFamily.OpenSansRegular, textAlign: 'right', marginRight: wp('14%'), textDecorationLine: 'underline', textDecorationColor: color.lightGray }}>Resend OTP</Text>
+                    </TouchableOpacity>
+                </View>
+            </TouchableWithoutFeedback>
+        );
+
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        // CommonReducer: state.CommonReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        OtpVerificationAction: (Token, OtpValue) => {
+            dispatch(OtpVerificationAction(Token, OtpValue));
+        },
+        OtpResendAction: (Token, OtpValue) => {
+            dispatch(OtpResendAction(Token, OtpValue));
+        },
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(OtpVerification);
+
+

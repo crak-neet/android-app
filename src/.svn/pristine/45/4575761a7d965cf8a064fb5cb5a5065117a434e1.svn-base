@@ -1,0 +1,68 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import { Invaliduser_Action } from './Invaliduser_Action'
+export function StartAssessmentTestAction(Token, SubjectId, subjectName, AssesmentId, AssesmentName) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SubjectId": SubjectId,
+                "AssesmentId": AssesmentId,
+            }),
+            method: 'post',
+            url: 'question/assesmentwisetest'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var AssesmentFullDetails = JsonResponse
+                var assessmentTestQuestions = JsonResponse.result
+                var _saveAssesSubjectId = JsonResponse.SubjectId
+                var _saveAssesmentId = JsonResponse.AssesmentId
+var AssesmentTimeTaken_Seconds =1000
+                dispatch(getServiceSuccess(AssesmentFullDetails, assessmentTestQuestions, _saveAssesSubjectId, _saveAssesmentId,AssesmentTimeTaken_Seconds))
+            } else if (JsonResponse.Message == "Invalid User") {
+
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+
+        }).catch((error) => {
+            Snackbar.show({
+                title: "Please try again,Later",
+                duration: Snackbar.LENGTH_SHORT
+            });
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onAssessmentTest',
+    }
+}
+export function getServiceSuccess(AssesmentFullDetails, assessmentTestQuestions, _saveAssesSubjectId, _saveAssesmentId,AssesmentTimeTaken_Seconds) {
+
+    return {
+        type: 'onAssessmentTest_SUCCESS',
+        AssesmentFullDetails, assessmentTestQuestions, _saveAssesSubjectId, _saveAssesmentId,AssesmentTimeTaken_Seconds
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onAssessmentTest_FAILURE',
+    }
+}

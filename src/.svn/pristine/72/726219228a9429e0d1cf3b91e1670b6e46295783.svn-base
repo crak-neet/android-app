@@ -1,0 +1,50 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function ImageAnswSpecialAction(Token, AnswerImageId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "AnswerImageId": AnswerImageId
+            }),
+            method: 'post',
+            url: 'question/specialanswerimage'
+        }).then((JsonResponse) => {
+          
+            if (JsonResponse.ResultStatus == "true") {
+                var specialTestZoomImage = JsonResponse.result
+                dispatch(getServiceSuccess(specialTestZoomImage))
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+
+
+        }).catch((error) => {
+                     dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'answerImageSpecialTest  ',
+
+    }
+}
+export function getServiceSuccess(specialTestZoomImage) {
+    return {
+        type: 'answerImageSpecialTest_SUCCESS',
+        specialTestZoomImage
+
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'answerImageSpecialTest_FAILURE',
+    }
+}

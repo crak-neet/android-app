@@ -1,0 +1,63 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import { Invaliduser_Action } from './Invaliduser_Action'
+export function StartSubjectSaveAction(Token, SubjectId, TestDetailId) {
+    // console.error(Token, SubjectId,TestDetailId)
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SubjectId": SubjectId,
+                "TestDetailId": TestDetailId,
+            }),
+            method: 'post',
+            url: 'question/subjectwisetest'
+        }).then((JsonResponse) => {
+
+            if (JsonResponse.ResultStatus == "true") {
+                // console.error(JsonResponse)
+                var subjectTestQuestions = JsonResponse.result
+                var _subjectIdSave = JsonResponse.SubjectId
+                dispatch(getServiceSuccess(subjectTestQuestions,_subjectIdSave))
+            } else if (JsonResponse.Message == "Invalid User") {
+
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'subjectWiseSaved',
+    }
+}
+export function getServiceSuccess(subjectTestQuestions,_subjectIdSave) {
+    return {
+        type: 'subjectWiseSaved_SUCCESS',
+        subjectTestQuestions,_subjectIdSave
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'subjectWiseSaved_FAILURE',
+    }
+}

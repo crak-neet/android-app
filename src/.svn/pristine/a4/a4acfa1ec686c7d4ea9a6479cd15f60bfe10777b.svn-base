@@ -1,0 +1,58 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+
+export function StartAssesmentSaveAction(Token, SubjectId,AssesmentId,TestDetailId) {
+
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SubjectId": SubjectId,
+                "AssesmentId": AssesmentId,
+                "TestDetailId": TestDetailId,
+
+            }),
+            method: 'post',
+            url: 'question/assesmentwisetest'
+        }).then((JsonResponse) => {
+            
+            if (JsonResponse.ResultStatus == "true") {
+                var assessmentTestQuestions = JsonResponse.result
+                // var _saveAssesSubjectId = JsonResponse.SubjectId
+                // var _saveAssesmentId = JsonResponse.AssesmentId
+                dispatch(getServiceSuccess(assessmentTestQuestions))
+            } else {
+                dispatch(getServiceFailure())
+            }
+            Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+            // Snackbar.show({
+            //     title: JsonResponse.Message,
+            //     duration: Snackbar.LENGTH_SHORT,
+            // });
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onAssessmentSaveTest',
+    }
+}
+export function getServiceSuccess(assessmentTestQuestions) {
+    
+    return {
+        type: 'onAssessmentSaveTest_SUCCESS',
+        assessmentTestQuestions
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onAssessmentSaveTest_FAILURE',
+    }
+}

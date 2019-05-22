@@ -1,0 +1,12 @@
+export function SkiplistArray(QuestionNumber) {
+    return (dispatch) => {
+        dispatch(getService(QuestionNumber))
+    }
+}
+
+export function getService(QuestionNumber) {
+    return {
+        type: 'SkiplistArray',
+        QuestionNumber
+    }
+}

@@ -1,0 +1,121 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    Platform,
+    ScrollView
+} from 'react-native';
+
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import Button from '../../Asset/Libraries/Button';
+import { textInputView, backIcon, title } from '../../Asset/NeetStyles/commonStyles';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, connect } from '../../Asset/Libraries/NpmList';
+import { Validations } from '../../Asset/Libraries/Validations';
+import { Header_White } from '../../Asset/Libraries/index'
+
+import { ForgotPasswordAction } from './../../Redux/Actions/ForgotPasswordAction';
+
+class ForgotPassword extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            EmailID: ''
+        }
+        this.onForgotPassword = debounce(this.onForgotPassword.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+        this.backIconPress = debounce(this.backIconPress.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+
+    onForgotPassword() {
+        if (this.state.EmailID == "") {
+            Snackbar.show({
+                title: "Enter your email address",
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        } else if (!Validations.validateEmail(this.state.EmailID)) {
+            Snackbar.show({
+                title: "Enter your valid email address",
+                duration: Snackbar.LENGTH_SHORT,
+            });
+        } else {
+            this.props.ForgotPasswordAction(this.state.EmailID)            
+        }
+    }
+    backIconPress() {
+        this.props.navigation.goBack()
+    }
+    render() {
+
+        return (
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+                <View style={{ flex: 1, backgroundColor: color.white }}>
+                    {/* <MystatusBar_Tran /> */}
+
+                    <Header_White onPressLeftIcon={() => this.backIconPress()} HeaderText='Forgot Password' />
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <View>
+                            <View style={{ height: hp('16%'), justifyContent: 'center', alignItems: 'center', marginTop: hp('14%') }}>
+                                <Image source={require('../../Asset/Icons/lock.png')} style={{ height: hp('13%'), width: hp('13%'), tintColor: color.appGreen }} />
+                            </View>
+                            <View style={{ height: hp('6%'), justifyContent: 'center', alignItems: 'center', marginLeft: wp('5%'), marginRight: wp('5%'), marginTop: hp('2%') }}>
+                                <Text style={{ fontSize: fontSize.Small, color: color.lightGray, textAlign: 'center', fontFamily: fontFamily.OpenSansRegular }}>Forgot Your Password? Please Enter Your Email Address</Text>
+                            </View>
+                            <View style={[textInputView.View, { marginTop: hp('3.5%') }]}>
+                                <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Image source={require('../../Asset/Icons/e-mail-envelope.png')} style={textInputView.textInputIconStyle} />
+                                </View>
+                                <View style={{ flex: 8, justifyContent: 'center' }}>
+                                    <TextInput
+                                        placeholder='Email Address'
+                                        ref='email'
+                                        underlineColorAndroid='transparent'
+                                        returnKeyType={"go"}
+                                        onSubmitEditing={() => this.onForgotPassword()}
+                                        style={{ fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}
+                                        onChangeText={(EmailID) => this.setState({ EmailID })}
+                                    />
+                                </View>
+
+                            </View>
+                            <View style={{ height: hp('1.5%') }}></View>
+                            <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onForgotPassword : this.onForgotPassword()} ButtonText='Submit' />
+                        </View>
+                    </ScrollView>
+                </View>
+
+            </TouchableWithoutFeedback>
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        ForgotPasswordAction: (EmailID) => {
+            dispatch(ForgotPasswordAction(EmailID));
+        },
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(ForgotPassword);
+
+

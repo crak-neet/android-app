@@ -1,0 +1,250 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    ScrollView,
+    TextInput,
+    Platform,
+    Picker
+} from 'react-native';
+
+
+import { fontSize, color, fontFamily, width, height } from '../../Asset/NeetStyles/fontsAndColors';
+import Button from '../../Asset/Libraries/Button';
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, ModalPicker, DateTimePicker, Moment, connect } from '../../Asset/Libraries/NpmList';
+import { Header_Only_Drawer } from '../../Asset/Libraries/index'
+
+class SpecialTest_Reports extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            onReportResultView: false,
+            isDateTimePickerVisible: false,
+            isToDateTimePickerVisible: false,
+            FromDate: "",
+            ToDate: "",
+            onReportResultView: false,
+            onSelectReportColor: false,
+        }
+
+        this.onSubmit = debounce(this.onSubmit.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+        this.onViewSummary = debounce(this.onViewSummary.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+    componentWillMount() {
+
+    }
+    componentDidMount() {
+
+    }
+    onSubmit() {
+        this.setState({
+            onReportResultView: true,
+        })
+    }
+    onViewSummary() {
+        this.props.navigation.navigate("SpecialTest_SummaryReports")
+    }
+    onSelectReport() {
+        if (this.state.onSelectReportColor == false) {
+            this.setState({
+                onSelectReportColor: true
+            })
+        } else {
+            this.setState({
+                onSelectReportColor: false
+            })
+        }
+
+    }
+    //-----------------------------Date Picker----------------------
+    _showDateTimePicker() { this.setState({ isDateTimePickerVisible: true }); }
+    _showToDateTimePicker() { this.setState({ isToDateTimePickerVisible: true }); }
+
+    _hideDateTimePicker = () => this.setState({
+        isDateTimePickerVisible: false,
+        isToDateTimePickerVisible: false,
+    });
+
+    _handleFromDatePicked = (FromDate) => {
+        this.setState({ FromDate: Moment(FromDate).format('DD-MM-YYYY') })
+        this._hideDateTimePicker();
+    };
+    _handleToDatePicked = (ToDate) => {
+        this.setState({ ToDate: Moment(ToDate).format('DD-MM-YYYY') })
+        this.setState({ isDateTimePickerVisible: false });
+    };
+
+    render() {
+
+        let index = 0;
+        const GenderListArray = [
+            { key: index++, label: 'Red Apples' },
+            { key: index++, label: 'Cherries' },
+            { key: index++, label: 'Cranberries' },
+            { key: index++, label: 'Pink Grapefruit' },
+            { key: index++, label: 'Raspberries' },
+            { key: index++, label: 'Red Potatoes' },
+            { key: index++, label: 'Rhubarb' },
+            { key: index++, label: 'Tomatoes' }
+        ];
+
+
+        return (
+
+            <View style={{ flex: 1, backgroundColor: color.white, }}>
+
+                <Header_Only_Drawer onPressLeftIcon={() => this.props.navigation.navigate('DrawerOpen')} HeaderText='Special Test Reports' />
+
+                <View style={{ height: hp('28%'), marginLeft: wp('5%'), marginRight: wp('5%'), marginTop: hp('2%'), borderRadius: wp('3%'), borderColor: color.lightGray, borderWidth: hp('0.15%'), }}>
+                    <View style={{ height: hp('7%'), flexDirection: 'row', justifyContent: 'center', marginLeft: wp('5%'), marginRight: wp('5%'),marginTop: hp('8%') }}>
+                        <TouchableOpacity onPress={() => this._showDateTimePicker()} style={{ flex: 4.6, flexDirection: 'row', justifyContent: 'center', borderBottomColor: color.lightGray, borderBottomWidth: hp('0.1%') }}>
+                            <View style={{ flex: 0.8, justifyContent: 'center' }}>
+                                <Text style={{ color: color.lightGray, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular, backgroundColor: 'transparent', }}>{this.state.FromDate == "" ? "From Date" : this.state.FromDate}</Text>
+                                <DateTimePicker
+                                    //for one day -> 86400000 , 6570 -> 18 yrs
+                                    // maximumDate={new Date(new Date().getTime() - (86400000 * 6575))}
+                                    //for one day -> 86400000 , 36525 -> 100 yrs
+                                    // minimumDate={new Date(new Date().getTime() - (86400000 * 36525))}
+                                    isVisible={this.state.isDateTimePickerVisible}
+                                    onConfirm={this._handleFromDatePicked}
+                                    onCancel={this._hideDateTimePicker}
+                                />
+                            </View>
+                            <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} ></Image>
+                            </View>
+                        </TouchableOpacity>
+                        <View style={{ flex: 0.8, justifyContent: 'center' }}></View>
+                        <TouchableOpacity onPress={() => this._showToDateTimePicker()} style={{ flex: 4.6, flexDirection: 'row', justifyContent: 'center', borderBottomColor: color.lightGray, borderBottomWidth: hp('0.1%') }}>
+                            <View style={{ flex: 0.8, justifyContent: 'center' }}>
+                                <Text style={{ color: color.lightGray, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular, backgroundColor: 'transparent', }}>{this.state.ToDate == "" ? "To Date" : this.state.ToDate}</Text>
+                                <DateTimePicker
+                                    //for one day -> 86400000 , 6570 -> 18 yrs
+                                    // maximumDate={new Date(new Date().getTime() - (86400000 * 6575))}
+                                    //for one day -> 86400000 , 36525 -> 100 yrs
+                                    // minimumDate={new Date(new Date().getTime() - (86400000 * 36525))}
+                                    isVisible={this.state.isToDateTimePickerVisible}
+                                    onConfirm={this._handleToDatePicked}
+                                    onCancel={this._hideDateTimePicker}
+                                />
+                            </View>
+                            <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} ></Image>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={{ height: hp('4%'), width: wp('68%'), alignSelf: 'center', zIndex: 1000, position: 'absolute', top: hp('34.2%'), right: wp('15%') }}>
+                    <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onSubmit : this.onSubmit()} ButtonText='Submit' />
+                </View>
+                {this.state.onReportResultView == false ?
+                    <View style={{ height: hp('50%'), marginLeft: wp('5%'), marginRight: wp('5%'), borderWidth: hp('0.1%'), borderColor: color.lightGray, marginTop: hp('5%'), borderRadius: wp('3%'), backgroundColor: '#ebebeb' }}>
+                        <View style={{ height: hp('30%'), justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: hp('15%'), width: hp('15%'), tintColor: color.lightGray }} />
+                        </View>
+                        <View style={{ height: hp('6%'), justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ color: color.lightGray, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Get Your Chapter Reports</Text>
+                        </View>
+                        <View style={{ height: hp('14%'), justifyContent: 'center' }}></View>
+                    </View>
+                    :
+                    <View>
+                        <View style={{ height: hp('40%'), marginLeft: wp('5%'), marginRight: wp('5%'), borderWidth: hp('0.1%'), borderColor: color.lightGray, marginTop: hp('5%'), borderRadius: wp('3%'), }}>
+                            <View style={{ height: hp('6%'), flexDirection: 'row', borderBottomWidth: wp('0.2%'), borderBottomColor: color.lightGray, backgroundColor: '#ebebeb', borderTopLeftRadius: wp('3%'), borderTopRightRadius: wp('3%') }}>
+                                <View style={{ flex: 1.1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansBold, textAlign: 'center', color: color.lightGray }}>S.No</Text>
+                                </View>
+                                <View style={{ flex: 2.2, justifyContent: 'center' }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansBold, textAlign: 'center', color: color.lightGray }}>Date</Text>
+                                </View>
+                                <View style={{ flex: 2.1, justifyContent: 'center' }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansBold, textAlign: 'center', color: color.lightGray }}>Subject</Text>
+                                </View>
+                                <View style={{ flex: 2.2, justifyContent: 'center' }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansBold, textAlign: 'center', color: color.lightGray }}>Chapter</Text>
+                                </View>
+                                <View style={{ flex: 2.4, justifyContent: 'center' }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, fontFamily: fontFamily.OpenSansBold, textAlign: 'center', color: color.lightGray }}>Test Name</Text>
+                                </View>
+                            </View>
+                            <View style={{ flex: 1, }}>
+                                <ScrollView>
+                                    <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.onSelectReport : this.onSelectReport()} style={{ height: hp('6%'), flexDirection: 'row' }}>
+                                        <View style={{ flex: 1.1, justifyContent: 'center', }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansBold, color: this.state.onSelectReportColor == false ? color.lightGray : color.black, textAlign: 'center' }}>1</Text>
+                                        </View>
+                                        <View style={{ flex: 2.2, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansBold, color: this.state.onSelectReportColor == false ? color.lightGray : color.black, textAlign: 'center' }}>30.10.2018</Text>
+                                        </View>
+                                        <View style={{ flex: 2.1, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansBold, color: this.state.onSelectReportColor == false ? color.lightGray : color.black, textAlign: 'center' }}>Subject-1</Text>
+                                        </View>
+                                        <View style={{ flex: 2.2, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansBold, color: this.state.onSelectReportColor == false ? color.lightGray : color.black, textAlign: 'center' }}>Chapter-1</Text>
+                                        </View>
+                                        <View style={{ flex: 2.4, justifyContent: 'center' }}>
+                                            <Text style={{ fontSize: hp('1.8%'), fontFamily: fontFamily.OpenSansBold, color: this.state.onSelectReportColor == false ? color.lightGray : color.black, textAlign: 'center' }}>Test-1</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </ScrollView>
+                            </View>
+                        </View>
+
+                        {this.state.onSelectReportColor == false ?
+                            <View>
+                                <View style={{ height: hp('2%') }} />
+                                <View style={{ height: hp('7%'), justifyContent: 'center', alignItems: 'center', backgroundColor: color.lightGray, borderRadius: hp("3.5"), marginLeft: wp('10%'), marginRight: wp('10%') }}>
+                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.white, fontFamily: fontFamily.OpenSansSemiBold }}>View Summary</Text>
+                                </View>
+                                <View style={{ height: hp('2%') }} />
+                            </View>
+                            :
+                            <View>
+                                <View style={{ height: hp('2%') }} />
+                                <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onViewSummary : this.onViewSummary()} ButtonText='View Summary' />
+                                <View style={{ height: hp('2%') }} />
+                            </View>
+                        }
+
+                    </View>
+                }
+
+            </View>
+
+
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        //    CommonReducer: state.CommonReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        // LoginAction: (Username, Password, Latitude, Longitude, Device, IpAddress, DeviceId, DeviceType, PushNotificationId) => {
+        //     dispatch(LoginAction(Username, Password, Latitude, Longitude, Device, IpAddress, DeviceId, DeviceType, PushNotificationId));
+        // },
+
+
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(SpecialTest_Reports);
+
+

@@ -1,0 +1,52 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+export function StartChapterTest_SaveAction(Token,SubjectId,ChapterId,TestDetailId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SubjectId": SubjectId,
+                "ChapterId": ChapterId,
+                "TestDetailId": TestDetailId,
+
+            }),
+            method: 'post',
+            url: 'question/chapterwisetest'
+        }).then((JsonResponse) => {
+
+            if (JsonResponse.ResultStatus == "true") {
+                var ChapterQuestions = JsonResponse.result
+
+                dispatch(getServiceSuccess(ChapterQuestions))
+            } else {
+                dispatch(getServiceFailure())
+
+                 Snackbar.show({
+                title: JsonResponse.Message,
+                duration: Snackbar.LENGTH_SHORT,
+            });
+            }
+        }).catch((error) => {
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'StartChapterTest_SaveAction',
+    }
+}
+export function getServiceSuccess(ChapterQuestions) {
+    return {
+        type: 'StartChapterTest_SaveAction_SUCCESS',
+        ChapterQuestions
+
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'StartChapterTest_SaveAction_FAILURE',
+    }
+}

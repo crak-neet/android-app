@@ -1,0 +1,477 @@
+import React, { Component } from 'react';
+import {
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    Modal,
+    ScrollView,
+    Platform,
+    AsyncStorage
+} from 'react-native';
+
+import { fontSize, color, fontFamily } from '../../Asset/NeetStyles/fontsAndColors';
+import Button from '../../Asset/Libraries/Button';
+import ButtonRed from '../../Asset/Libraries/ButtonRed';
+
+import { wp, hp } from '../../Asset/Libraries/ResponsiveScreen';
+import { debounce, Snackbar, Icon, connect, LinearGradient, Stopwatch, Timer } from '../../Asset/Libraries/NpmList';
+import { Header_BackIcon } from '../../Asset/Libraries/index'
+import { ImageQuestionAction } from './../../Redux/Actions/ImageQuestionAction';
+import { ImageAnswerAction } from './../../Redux/Actions/ImageAnswerAction';
+
+class AssessmentTest_Questions extends Component {
+    constructor() {
+        console.disableYellowBox = true;
+        Keyboard.dismiss()
+        super();
+        this.state = {
+            token: '',
+            QuestionImageId: '1',
+            answerImageId: '4',
+            Question_ImageModel: false,
+            SubmitModel: false,
+            Option_ImageModel: false,
+            CancelModel: false,
+            onQuesChange: false,
+        }
+        this.backIconPress = debounce(this.backIconPress.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+        this.onConfirmSubmit = debounce(this.onConfirmSubmit.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+        this.onCancelQues = debounce(this.onCancelQues.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token) => {
+            if (Token) {
+                this.setState({
+                    token: Token
+                })
+            }
+        })
+    }
+    componentDidMount() {
+
+    }
+    backIconPress() {
+        this.props.navigation.goBack()
+    }
+    OnQuesChange(tabRoute) {
+        if (tabRoute == "Next") {
+            if (this.state.onQuesChange == false) {
+                this.setState({
+                    onQuesChange: true,
+                })
+            } else {
+                this.setState({
+                    onQuesChange: false,
+                })
+            }
+        } else {
+            if (this.state.onQuesChange == true) {
+                this.setState({
+                    onQuesChange: false,
+                })
+            } else {
+                this.setState({
+                    onQuesChange: true,
+                })
+            }
+        }
+    }
+
+    onConfirmSubmit() {
+        this.props.navigation.navigate("AssessmentTest_Scorecard")
+        this.onRequestClose()
+    }
+    onCancelQues() {
+        this.setState({ CancelModel: false, })
+        this.props.navigation.navigate("AssessmentTest")
+    }
+
+    Modelview_Method(Model_RouteName) {
+        if (Model_RouteName == "Question_ImageModel") {
+            this.setState({ Question_ImageModel: true, })
+            this.props.ImageQuestionAction(this.state.token, this.state.QuestionImageId)
+
+        } else if (Model_RouteName == "Option_ImageModel") {
+            this.setState({ Option_ImageModel: true, })
+            this.props.ImageAnswerAction(this.state.token, this.state.answerImageId)
+
+        } else if (Model_RouteName == "SubmitModel") {
+            this.setState({ SubmitModel: true, })
+
+        } else {
+            this.setState({ CancelModel: true, })
+        }
+    }
+
+
+    onRequestClose() {
+        this.setState({
+            Question_ImageModel: false,
+            Option_ImageModel: false,
+            SubmitModel: false,
+            CancelModel: false
+        });
+    }
+
+    render() {
+        const { QuestionZoomImage, answerImageZoom } = this.props.NeetReducer
+        return (
+            // <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1, backgroundColor: "#F7F7F7", }}>
+                <Header_BackIcon onPressLeftIcon={() => this.props.skipDebounce ? this.props.backIconPress : this.backIconPress()} HeaderText='Assessment Test' />
+                <View style={{ flex: 0.15, justifyContent: 'center', backgroundColor: color.white }}>
+                    <View style={{ flex: 1, marginLeft: wp('5%'), marginRight: wp('5%'), justifyContent: 'center' }}>
+                        <View style={{ height: hp('6%'), justifyContent: 'center', flexDirection: 'row', borderBottomColor: color.lightGray, borderBottomWidth: wp('0.15%') }}>
+                            <View style={{ flex: 0.65, flexDirection: 'row', justifyContent: 'center' }}>
+                                <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Image source={require('../../Asset/Icons/test98.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} />
+                                </View>
+                                <View style={{ flex: 0.8, justifyContent: 'center', }}>
+                                    <Text style={{ fontSize: fontSize.verySmall, color: color.appGreen, fontFamily: fontFamily.OpenSansRegular, }}>Subject-1 </Text>
+                                </View>
+                            </View>
+                            <View style={{ flex: 0.35, justifyContent: 'center', flexDirection: 'row', }}>
+                                <View style={{ flex: 0.4, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Image source={require('../../Asset/Icons/stopwatch.png')} style={{ height: hp('3%'), width: hp('3%'), tintColor: color.appGreen }} />
+                                </View>
+                                <View style={{ flex: 0.6, justifyContent: 'center' }}>
+                                    <Stopwatch laps msecs start={false}
+                                        msecs={false}
+                                        timerReset={false}
+                                        // reset={this.state.stopwatchReset}
+                                        options={options}
+                                        getTime={this.getFormattedTime} />
+                                    {/* <Timer totalDuration={180015 * 60} sec start={true}
+                                        msec={false}
+                                        // reset={this.state.timerReset}
+                                        options={options}
+                                        // handleFinish={handleTimerComplete}
+                                        getTime={this.getFormattedTime} /> */}
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{ height: hp('6%'), justifyContent: 'center', flexDirection: 'row', marginLeft: wp("2%"), marginRight: wp("2%") }}>
+                            <View style={{ flex: 0.35, flexDirection: 'row', justifyContent: 'center', }}>
+                                <TouchableOpacity onPress={() => this.OnQuesChange("Previous")} style={{ flex: 0.3, justifyContent: 'center', }}>
+                                    <Image source={require('../../Asset/Icons/arrow_right_left1.png')} style={{ height: hp('3.5%'), width: hp('3.5%'), tintColor: color.appGreen }} />
+                                </TouchableOpacity>
+                                <View style={{ flex: 0.7, justifyContent: 'center', }}>
+                                    <Text style={{ fontSize: fontSize.Small, color: color.appGreen, fontFamily: fontFamily.OpenSansRegular, }}>Prev</Text>
+                                </View>
+                            </View>
+                            <View style={{ flex: 0.3, justifyContent: 'center', }}>
+                                {this.state.onQuesChange == false ?
+                                    <Text style={{ fontSize: fontSize.Small, color: color.appRed, fontFamily: fontFamily.OpenSansSemiBold, textAlign: 'center' }}>Q : 2 - 25</Text>
+                                    :
+                                    <Text style={{ fontSize: fontSize.Small, color: color.appRed, fontFamily: fontFamily.OpenSansSemiBold, textAlign: 'center' }}>Q : 3 - 25</Text>
+                                }</View>
+                            <View style={{ flex: 0.35, flexDirection: 'row', justifyContent: 'center', }}>
+                                <View style={{ flex: 0.7, justifyContent: 'center', }}>
+                                    <Text style={{ fontSize: fontSize.Small, color: color.appGreen, fontFamily: fontFamily.OpenSansRegular, textAlign: 'right', marginRight: wp('1%') }}>Next</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => this.OnQuesChange("Next")} style={{ flex: 0.3, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Image source={require('../../Asset/Icons/right-arrow-circular-button.png')} style={{ height: hp('3.5%'), width: hp('3.5%'), tintColor: color.appGreen }} />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
+                <View style={{ flex: 0.73, marginLeft: wp('1%'), marginRight: wp('1%'), marginTop: hp('1%'), justifyContent: 'center', }}>
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+
+                            {this.state.onQuesChange == false ?
+
+                                <View style={{ flex: 1, justifyContent: 'center', borderRadius: wp("3%"), borderWidth: hp('0.15%'), marginLeft: wp("3%"), marginRight: wp("3%"), paddingBottom: hp('1%'), paddingTop: hp('0.3%'), }}>
+                                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', marginLeft: wp('2%'), marginRight: wp('2%'), marginTop: hp('1%'), marginBottom: hp('1%'), borderRadius: wp('3%'), borderColor: color.lightGray, borderWidth: hp('0.15%') }}>
+                                        <View style={{ flex: 0.5, justifyContent: 'center', paddingBottom: hp('2%'), paddingTop: hp('2%') }}>
+                                            <Text style={{ fontSize: fontSize.Small, color: color.black, fontFamily: fontFamily.OpenSansSemiBold, marginLeft: wp('3%'), textAlign: 'justify', marginRight: wp('3%') }}><Text style={{ fontSize: fontSize.Small, color: "#e68021", fontFamily: fontFamily.OpenSansBold, }}>Q - 2</Text>    Identify the major products of this molecule and select correct component given below</Text>
+                                            <Text style={{ fontSize: fontSize.Small, color: color.black, fontFamily: fontFamily.OpenSansSemiBold, marginLeft: wp('3%'), textAlign: 'justify', marginRight: wp('3%') }}>Identify the major products of this molecule and select correct component given below</Text>
+                                            <Text style={{ fontSize: fontSize.Small, color: color.black, fontFamily: fontFamily.OpenSansSemiBold, marginLeft: wp('3%'), textAlign: 'justify', marginRight: wp('3%') }}>Identify the major products of this molecule and select correct component given below</Text>
+                                        </View>
+                                        <TouchableOpacity onPress={() => this.Modelview_Method("Question_ImageModel")} style={{ flex: 0.5, justifyContent: 'center', paddingBottom: hp('2%'), paddingTop: hp('2%'), alignItems: 'center' }}>
+                                            <Image source={require('../../Asset/Icons/molecule.png')} style={{ height: hp('13%'), width: hp('13%'), }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={{ flex: 1, backgroundColor: "#ebebeb", flexDirection: 'column', justifyContent: 'center', marginLeft: wp('2%'), paddingBottom: hp('2%'), paddingTop: hp('2.5%'), marginRight: wp('2%'), borderRadius: wp('3%'), borderColor: color.lightGray, borderWidth: hp('0.15%') }}>
+                                        <View style={{ flex: 5, flexDirection: 'row', paddingBottom: hp('2%'), paddingTop: hp('2%'), }}>
+                                            <View style={{ flex: 5, flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), textAlign: 'center', backgroundColor: color.white }}>A</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity onPress={() => this.Modelview_Method("Option_ImageModel")} style={{ flex: 3, justifyContent: 'center' }}>
+                                                    <Image source={require('../../Asset/Icons/formula.png')} style={{ height: hp('8%'), width: hp('8%'), borderWidth: wp('0.2%'), backgroundColor: color.white }} />
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={{ flex: 5, flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.white, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), textAlign: 'center', backgroundColor: color.appGreen }}>B</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity onPress={() => this.Modelview_Method("Option_ImageModel")} style={{ flex: 3, justifyContent: 'center' }}>
+                                                    <Image source={require('../../Asset/Icons/formula.png')} style={{ height: hp('8%'), width: hp('8%'), borderWidth: wp('0.2%'), backgroundColor: color.appGreen, tintColor: color.white }} />
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                        <View style={{ flex: 5, flexDirection: 'row', paddingBottom: hp('2%'), paddingTop: hp('2%'), }}>
+                                            <View style={{ flex: 5, flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), textAlign: 'center', backgroundColor: color.white }}>C</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity onPress={() => this.Modelview_Method("Option_ImageModel")} style={{ flex: 3, justifyContent: 'center' }}>
+                                                    <Image source={require('../../Asset/Icons/formula.png')} style={{ height: hp('8%'), width: hp('8%'), borderWidth: wp('0.2%'), backgroundColor: color.white }} />
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={{ flex: 5, flexDirection: 'row', paddingBottom: hp('2%'), paddingTop: hp('2%'), }}>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), textAlign: 'center', backgroundColor: color.white }}>D</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity onPress={() => this.Modelview_Method("Option_ImageModel")} style={{ flex: 3, justifyContent: 'center' }}>
+                                                    <Image source={require('../../Asset/Icons/formula.png')} style={{ height: hp('8%'), width: hp('8%'), borderWidth: wp('0.2%'), backgroundColor: color.white }} />
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                :
+
+                                <View style={{ flex: 1, justifyContent: 'center', borderRadius: wp("3%"), borderWidth: hp('0.1%'), marginLeft: wp("3%"), marginRight: wp("3%"), paddingBottom: hp('2.5%'), paddingTop: hp('1%'), }}>
+                                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', marginLeft: wp('5%'), marginRight: wp('5%'), marginTop: hp('1.5%'), marginBottom: hp('1.5%'), borderRadius: wp('3%'), elevation: 2, }}>
+                                        <View style={{ flex: 0.5, justifyContent: 'center', paddingBottom: hp('2%'), paddingTop: hp('2%') }}>
+                                            <Text style={{ fontSize: fontSize.Small, color: color.black, fontFamily: fontFamily.OpenSansSemiBold, marginLeft: wp('3%'), textAlign: 'justify', marginRight: wp('3%') }}><Text style={{ fontSize: fontSize.Small, color: "#e68021", fontFamily: fontFamily.OpenSansBold, }}>Q _ 3</Text>    Identify the major products of this molecule and select correct component given below</Text>
+                                        </View>
+                                        {/* <TouchableOpacity onPress={() => this.Modelview_Method("Question_ImageModel")} style={{ flex: 0.5, justifyContent: 'center', paddingBottom: hp('2%'), paddingTop: hp('2%'), alignItems: 'center' }}>
+                                                                                    <Image source={require('../../Asset/Icons/molecule.png')} style={{ height: hp('13%'), width: hp('13%'), }} />
+                                            </TouchableOpacity> */}
+                                    </View>
+                                    <View style={{ flex: 1, backgroundColor: "#ebebeb", flexDirection: 'column', justifyContent: 'center', marginLeft: wp('5%'), paddingBottom: hp('2%'), paddingTop: hp('2%'), marginRight: wp('5%'), borderRadius: wp('3%'), elevation: 2, }}>
+                                        <View style={{ flex: 5, flexDirection: 'row', paddingBottom: hp('2%'), paddingTop: hp('2%'), }}>
+                                            <View style={{ flex: 5, flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), textAlign: 'center', backgroundColor: color.white }}>A</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <View style={{ flex: 3, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.Small, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), }}>Banana</Text>
+                                                </View>
+                                            </View>
+                                            <View style={{ flex: 5, flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.white, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), textAlign: 'center', backgroundColor: color.gradientTheme }}>B</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <View style={{ flex: 3, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.Small, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), }}>Gouva</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                        <View style={{ flex: 5, flexDirection: 'row', paddingBottom: hp('2%'), paddingTop: hp('2%'), }}>
+                                            <View style={{ flex: 5, flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), textAlign: 'center', backgroundColor: color.white }}>C</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <View style={{ flex: 3, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.Small, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), }}>Apple</Text>
+                                                </View>
+                                            </View>
+                                            <View style={{ flex: 5, flexDirection: 'row', paddingBottom: hp('2%'), paddingTop: hp('2%'), }}>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), textAlign: 'center', backgroundColor: color.white }}>D</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ flex: 0.5 }}></View>
+                                                <View style={{ flex: 3, justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: fontSize.Small, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1%'), }}>Green Graphs</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                            }
+
+                        </ScrollView>
+                    </TouchableWithoutFeedback>
+                </View>
+
+                <View style={{ flex: 0.12, flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: color.white }}>
+                    <View style={{ flex: 0.05 }} />
+                    <TouchableOpacity onPress={() => this.Modelview_Method("SubmitModel")} style={{ flex: 0.4, justifyContent: 'center', alignContent: 'center' }}>
+                        <View style={{ height: hp('7%'), backgroundColor: color.appGreen, justifyContent: 'center', alignItems: 'center', borderRadius: hp("3.5") }}>
+                            <Text style={{ fontSize: fontSize.lightMedium, color: color.white, fontFamily: fontFamily.OpenSansSemiBold }}>Submit</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <View style={{ flex: 0.1 }} />
+                    <TouchableOpacity onPress={() => this.Modelview_Method("Cancel")} style={{ flex: 0.4, justifyContent: 'center', alignContent: 'center' }}>
+                        <View style={{ height: hp('7%'), backgroundColor: color.appRed, justifyContent: 'center', alignItems: 'center', borderRadius: hp("3.5") }}>
+                            <Text style={{ fontSize: fontSize.lightMedium, color: color.white, fontFamily: fontFamily.OpenSansSemiBold }}>Cancel</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <View style={{ flex: 0.05 }} />
+                </View>
+
+
+
+                <Modal
+                    animationType='fade'
+                    transparent={true}
+                    visible={this.state.Question_ImageModel}
+                    onRequestClose={() => { this.setState({ Question_ImageModel: false }) }}>
+                    <TouchableOpacity activeOpacity={0} onPressOut={() => this.onRequestClose()} style={{ flex: 1, alignSelf: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        <View style={{ height: hp('100%'), width: wp('100%'), justifyContent: 'center', alignItems: 'center', alignSelf: 'center', backgroundColor: 'transparent' }}>
+                            <TouchableWithoutFeedback>
+                                <View style={{ height: hp('35%'), width: wp('80%'), backgroundColor: color.white, borderRadius: hp('1.5%') }}>
+                                    <View style={{ height: hp('4%'), justifyContent: 'center', alignItems: 'flex-end' }}>
+                                        <TouchableOpacity onPressOut={() => this.onRequestClose()} >
+                                            <Image source={require('../../Asset/Icons/closesymbol.png')} style={{ height: hp('3%'), width: hp('3%'), marginRight: wp('1%'), tintColor: color.appTheme }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                        <Image source={{ uri: QuestionZoomImage }} style={{ height: hp('26%'), width: hp('26%'), }} />
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+
+                <Modal
+                    animationType='fade'
+                    transparent={true}
+                    visible={this.state.Option_ImageModel}
+                    onRequestClose={() => { this.setState({ Option_ImageModel: false }) }}>
+                    <TouchableOpacity activeOpacity={0} onPressOut={() => this.onRequestClose()} style={{ flex: 1, alignSelf: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        <View style={{ height: hp('100%'), width: wp('100%'), justifyContent: 'center', alignItems: 'center', alignSelf: 'center', backgroundColor: 'transparent' }}>
+                            <TouchableWithoutFeedback>
+                                <View style={{ height: hp('35%'), width: wp('80%'), backgroundColor: color.white, borderRadius: hp('1.5%') }}>
+                                    <View style={{ height: hp('4%'), justifyContent: 'center', alignItems: 'flex-end' }}>
+                                        <TouchableOpacity onPressOut={() => this.onRequestClose()} >
+                                            <Image source={require('../../Asset/Icons/closesymbol.png')} style={{ height: hp('3%'), width: hp('3%'), marginRight: wp('1%'), tintColor: color.appTheme }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                        <Image source={{ uri : answerImageZoom }} style={{ height: hp('26%'), width: hp('26%'), }} />
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+
+                <Modal
+                    animationType='fade'
+                    transparent={true}
+                    visible={this.state.SubmitModel}
+                    onRequestClose={() => { this.setState({ SubmitModel: false }) }}>
+                    <TouchableOpacity activeOpacity={0} onPressOut={() => this.onRequestClose()} style={{ flex: 1, alignSelf: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        <View style={{ height: hp('100%'), width: wp('100%'), justifyContent: 'center', alignItems: 'center', alignSelf: 'center', backgroundColor: 'transparent' }}>
+                            <TouchableWithoutFeedback>
+                                <View style={{ height: hp('33%'), width: wp('80%'), backgroundColor: color.white, borderRadius: hp('1.5%'), elevation: 2 }}>
+                                    <View style={{ height: hp('7%'), justifyContent: 'center', marginLeft: wp('3%'), marginRight: wp('3%'), borderBottomColor: color.appTheme, borderBottomWidth: hp('0.15%') }}>
+                                        <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1.5%') }}>Confirmation</Text>
+                                    </View>
+                                    <View style={{ height: hp('4%'), justifyContent: 'center', marginTop: hp('2%') }}>
+                                        <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Do you want to submit?</Text>
+                                    </View>
+                                    <View style={{ marginLeft: wp('10%'), marginRight: wp('10%'), marginTop: hp('2%') }}>
+
+                                        <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onConfirmSubmit : this.onConfirmSubmit()} ButtonText='Ok' />
+
+                                        <ButtonRed OnButtonClicked={() => this.props.skipDebounce ? this.props.onRequestClose : this.onRequestClose()} ButtonText='Cancel' />
+                                        <View style={{ height: hp('1%') }}></View>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+                <Modal
+                    animationType='fade'
+                    transparent={true}
+                    visible={this.state.CancelModel}
+                    onRequestClose={() => { this.setState({ CancelModel: false }) }}>
+                    <TouchableOpacity activeOpacity={0} onPressOut={() => this.onRequestClose()} style={{ flex: 1, alignSelf: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        <View style={{ height: hp('100%'), width: wp('100%'), justifyContent: 'center', alignItems: 'center', alignSelf: 'center', backgroundColor: 'transparent' }}>
+                            <TouchableWithoutFeedback>
+                                <View style={{ height: hp('33%'), width: wp('80%'), backgroundColor: color.white, borderRadius: hp('1.5%'), elevation: 2 }}>
+                                    <View style={{ height: hp('7%'), justifyContent: 'center', marginLeft: wp('3%'), marginRight: wp('3%'), borderBottomColor: color.appTheme, borderBottomWidth: hp('0.15%') }}>
+                                        <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansBold, marginLeft: wp('1.5%') }}>Confirmation</Text>
+                                    </View>
+                                    <View style={{ height: hp('4%'), justifyContent: 'center', marginTop: hp('2%') }}>
+                                        <Text style={{ fontSize: fontSize.lightMedium, color: color.black, fontFamily: fontFamily.OpenSansRegular, textAlign: 'center' }}>Do you want to Cancel?</Text>
+                                    </View>
+                                    <View style={{ marginLeft: wp('10%'), marginRight: wp('10%'), marginTop: hp('2%') }}>
+
+                                        <Button OnButtonClicked={() => this.props.skipDebounce ? this.props.onCancelQues : this.onCancelQues()} ButtonText='Ok' />
+
+                                        <ButtonRed OnButtonClicked={() => this.props.skipDebounce ? this.props.onRequestClose : this.onRequestClose()} ButtonText='Cancel' />
+                                        <View style={{ height: hp('1%') }}></View>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            </View>
+            // </TouchableWithoutFeedback>
+
+
+        );
+    }
+}
+const options = {
+    container: {
+        backgroundColor: '#fff',
+        padding: 2,
+        borderRadius: 2,
+        width: 75,
+    },
+    text: {
+        fontSize: fontSize.Small,
+        color: '#000',
+    }
+};
+
+const mapStateToProps = (state) => {
+    return {
+        NeetReducer: state.NeetReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        ImageQuestionAction: (Token, QuestionImageId) => {
+            dispatch(ImageQuestionAction(Token, QuestionImageId));
+        },
+        ImageAnswerAction: (Token, AnswerImageId) => {
+            dispatch(ImageAnswerAction(Token, AnswerImageId));
+        },
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(AssessmentTest_Questions);

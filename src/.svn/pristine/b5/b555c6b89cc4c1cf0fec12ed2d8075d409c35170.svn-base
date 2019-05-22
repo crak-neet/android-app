@@ -1,0 +1,73 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import { Invaliduser_Action } from './Invaliduser_Action'
+export function StartSpecialTest_SaveAction(Token, SpecialTestId, TestDetailId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "SpecialTestId": SpecialTestId,
+                "TestDetailId": TestDetailId,
+            }),
+            method: 'post',
+            url: 'question/specialtest'
+        }).then((JsonResponse) => {
+            if (JsonResponse.ResultStatus == "true") {
+                var specialTestQuestions = JsonResponse.result
+
+                var TimeTaken = (JsonResponse.TimeTaken).split(":")
+                var SpecialTimeTaken = (TimeTaken[0]) * (1000 * 60 * 60) + (TimeTaken[1]) * (1000 * 60) + (TimeTaken[2]) * 1000
+                var SpecialTimeTaken_Seconds = 1000 * 60 * 60 * 3 - SpecialTimeTaken
+                var _saveSpecialTestId = JsonResponse.SpecialTestId
+
+                var Special_TimeTakenStatus = JsonResponse.TimeTakenStatus
+                var SpecialTestFullDetails = JsonResponse
+
+                dispatch(getServiceSuccess(specialTestQuestions,SpecialTimeTaken_Seconds,Special_TimeTakenStatus,_saveSpecialTestId,SpecialTestFullDetails))
+            } else if (JsonResponse.Message == "Invalid User") {
+
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+
+
+        }).catch((error) => {
+            Snackbar.show({
+                title: "Please try again,Later",
+                duration: Snackbar.LENGTH_SHORT
+            });
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'saveSpecialTest',
+    }
+}
+export function getServiceSuccess(specialTestQuestions,SpecialTimeTaken_Seconds,Special_TimeTakenStatus,_saveSpecialTestId,SpecialTestFullDetails) {
+    return {
+        type: 'saveSpecialTest_SUCCESS',
+        specialTestQuestions,SpecialTimeTaken_Seconds,Special_TimeTakenStatus,_saveSpecialTestId,SpecialTestFullDetails
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'saveSpecialTest_FAILURE',
+    }
+}

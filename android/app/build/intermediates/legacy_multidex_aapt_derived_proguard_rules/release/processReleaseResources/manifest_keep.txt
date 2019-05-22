@@ -1,0 +1,2 @@
+# Referenced at E:\CrakNeet Working\android\app\build\intermediates\merged_manifests\release\processReleaseManifest\merged\AndroidManifest.xml:43
+-keep class com.neet.MainApplication { <init>(...); }

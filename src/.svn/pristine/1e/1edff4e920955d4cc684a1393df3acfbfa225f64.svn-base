@@ -1,0 +1,218 @@
+import React, { Component } from 'react';
+import { addNavigationHelpers, NavigationActions, PropTypes, connect } from './../../Asset/Libraries/NpmList';
+import { BackHandler, Alert, NetInfo, AsyncStorage } from 'react-native';
+import { Stack } from './navigationConfiguration';
+
+const getCurrentScreen = (navigationState) => {
+  if (!navigationState) {
+    return null
+  }
+  const route = navigationState.routes[navigationState.index]
+  if (route.routes) {
+    return getCurrentScreen(route)
+  }
+  return route.routeName
+}
+
+// ------------------------------------------------
+class StackNavigation extends Component {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    navigation: PropTypes.shape().isRequired,
+  };
+
+  // ---------------------------------------------------
+  constructor(props) {
+    super(props);
+    this.state = {
+      token: '',
+      QuestionIndex: 0,
+    }
+    BackHandler.addEventListener('hardwareBackPress', this.backAction);
+  }
+
+  componentWillMount() {
+    AsyncStorage.getItem("Token", (error, Token) => {
+      if (Token) {
+        this.setState({
+          token: Token
+        })
+      }
+    })
+  }
+
+  //-----------------------------Cancel Test----------------------------
+
+  onCancelTest(TestDetailId) {
+    fetch('http://139.59.42.219/api/question/canceltest', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "Token": this.state.token,
+        "TestDetailId": TestDetailId,
+      })
+    })
+      .then((response) => response.json())
+      .then((JsonResponse) => {
+
+        if (JsonResponse.ResultStatus == "true") {
+          this.props.dispatch(NavigationActions.navigate({ routeName: 'Dashboard' }))
+        } else {
+          Snackbar.show({
+            title: JsonResponse.Message,
+            duration: Snackbar.LENGTH_SHORT
+          });
+        }
+      })
+      .catch((error) => {
+        Snackbar.show({
+          title: "Please try again,Later",
+          duration: Snackbar.LENGTH_SHORT
+        });
+      });
+  }
+
+  onExit_Test() {
+    dispatch(NavigationActions.navigate({ routeName: 'Dashboard' }));
+    return true
+  }
+
+  // ---------------------------------------------------
+
+  backAction = () => {
+
+    const { dispatch, navigation } = this.props;
+    const { neetModelTestQuestions, assessmentTestQuestions, ChapterQuestions, specialTestQuestions, subjectTestQuestions } = this.props.NeetReducer
+    const currentScreen = getCurrentScreen(navigation)
+    NetInfo.getConnectionInfo().then((connectionInfo) => {
+      if (connectionInfo.type == "none") {
+        Snackbar.show({
+          title: 'No internet connection. Please try again later.',
+          duration: Snackbar.LENGTH_SHORT,
+        });
+      } else {
+
+        if (currentScreen === 'Dashboard' || currentScreen === 'Login') {
+          Alert.alert(
+            'Confirmation',
+            'Are you are want to exit?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.onExit() },
+            ],
+            { cancelable: false }
+          )
+          return true
+        } else if (currentScreen === "MyProfile" || currentScreen === "ChangePassword" || currentScreen === "Notification" || currentScreen === "Revise_Search" ||
+
+          currentScreen === "AssessmentTest" || currentScreen === "ChapterTest" || currentScreen === "NEETModelTest" || currentScreen === "SpecialTest" || currentScreen === "SubjectTest" ||
+
+          currentScreen === "AssessmentTest_Reports" || currentScreen === "ChapterTest_Reports" || currentScreen === "NEETModelTest_Reports" ||
+          currentScreen === "SpecialTest_Reports" || currentScreen === "SubjectTest_Reports" ||
+
+          currentScreen === "AssessmentTest_Scorecard" || currentScreen === "ChapterTest_Scorecard" || currentScreen === "NEETModelTest_Scorecard"
+          || currentScreen === "SpecialTest_Scorecard" || currentScreen === "SubjectTest_Scorecard") {
+          dispatch(NavigationActions.navigate({ routeName: 'Dashboard' }));
+          return true
+        } else if (currentScreen === 'AssessmentTest_Questions') {
+          Alert.alert(
+            'Confirmation',
+            'Are you are want to cancel Test?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.onCancelTest(assessmentTestQuestions[0].TestDetailId) },
+            ],
+            { cancelable: false }
+          )
+          return true
+        } else if (currentScreen === 'ChapterTest_Questions') {
+          Alert.alert(
+            'Confirmation',
+            'Are you are want to cancel Test?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.onCancelTest(ChapterQuestions[0].TestDetailId) },
+            ],
+            { cancelable: false }
+          )
+          return true
+        }
+        else if (currentScreen === 'NEETModelTest_Questions') {
+          Alert.alert(
+            'Confirmation',
+            'Are you are want to cancel Test?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.onCancelTest(neetModelTestQuestions[0].TestDetailId) },
+            ],
+            { cancelable: false }
+          )
+          return true
+        }
+        else if (currentScreen === 'SpecialTest_Questions') {
+          Alert.alert(
+            'Confirmation',
+            'Are you are want to cancel Test?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.onCancelTest(specialTestQuestions[0].TestDetailId) },
+            ],
+            { cancelable: false }
+          )
+          return true
+        }
+        else if (currentScreen === 'SubjectTest_Questions') {
+          Alert.alert(
+            'Confirmation',
+            'Are you are want to cancel Test?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.onCancelTest(subjectTestQuestions[0].TestDetailId) },
+            ],
+            { cancelable: false }
+          )
+          return true
+        } else if (currentScreen === "Retry") {
+          return false
+        } else if (currentScreen === "SkippedTest_Module") {
+          dispatch(NavigationActions.back());
+          return true
+        }
+        dispatch(NavigationActions.back());
+      }
+    });
+    return true;
+  };
+  onExit() {
+    BackHandler.exitApp()
+  }
+
+  // -------------------------------------------------------
+
+  render() {
+
+    const { dispatch, navigation } = this.props;
+    return (
+      <Stack
+        ref={(ref) => { this.navigator = ref; }}
+        navigation={
+          addNavigationHelpers({
+            dispatch,
+            state: navigation,
+          })
+        }
+      />
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    navigation: state.stack,
+    NeetReducer: state.NeetReducer
+  };
+}
+export default connect(mapStateToProps)(StackNavigation);
+

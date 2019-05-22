@@ -1,0 +1,378 @@
+import React, { Component } from 'react';
+import {
+    View,
+    TouchableOpacity,
+    Text,
+    ScrollView,
+    Image,
+    Alert,
+    TouchableWithoutFeedback,
+    Platform,
+    AsyncStorage
+} from 'react-native';
+import { NavigationActions, connect, debounce } from './../../Asset/Libraries/NpmList';
+import PropTypes from 'prop-types';
+import { fontSize, fontFamily, color } from './../../Asset/NeetStyles/fontsAndColors';
+import { textInputView, drawerComponentStyle } from './../../Asset/NeetStyles/commonStyles';
+import { hp, wp } from './../../Asset/Libraries/ResponsiveScreen'
+
+export class DrawerComponent extends Component {
+    constructor(props) {
+        console.disableYellowBox = true;
+        super(props);
+        this.state = {
+            Token: "",
+           
+            LastRouteName: '',
+            TakeTestView: false,
+            ViewTestResultView: false,
+        }
+        this.navigateToScreen = debounce(this.navigateToScreen.bind(this), 1000, {
+            leading: true,
+            trailing: false,
+        });
+    }
+    componentWillMount() {
+        AsyncStorage.getItem("Token", (error, Token_Result) => {
+            if (Token_Result !=null) {
+
+                this.setState({
+                    Token: Token_Result,
+                })
+            }
+        })
+
+    }
+    componentDidMount() {
+
+
+    }
+    onHideVisible(visible) {
+        if (visible == "TakeTest") {
+            if (this.state.TakeTestView == false) {
+                this.setState({
+                    TakeTestView: true,
+                    ViewTestResultView: false,
+                })
+            } else {
+                this.setState({
+                    TakeTestView: false,
+                })
+            }
+        } else {
+            if (this.state.ViewTestResultView == false) {
+                this.setState({
+                    ViewTestResultView: true,
+                    TakeTestView: false,
+                })
+            } else {
+                this.setState({
+                    ViewTestResultView: false,
+                })
+            }
+        }
+    }
+    navigateToScreen(route) {
+        this.setState({
+            LastRouteName: route
+        })
+        if (route == 'Logout') {
+            Alert.alert("", "Do you want to logout ?",
+                [
+                    { text: "Cancel" },
+                    { text: "OK", onPress: () => this.Logout_onClick() }
+                ])
+        } else {
+
+            const navigateAction = NavigationActions.navigate({
+                routeName: route
+            });
+
+            // this.props.Exports_Components("Upcoming")
+            this.props.navigation.dispatch(navigateAction);
+            this.props.navigation.navigate("DrawerClose");
+        }
+    }
+    Logout_onClick() {
+
+
+        fetch('http://139.59.42.219/api/user/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "Token": this.state.Token,
+               
+            })
+        })
+            .then((response) => response.json())
+            .then((JsonResponse) => {
+// console.error(JsonResponse)
+                if (JsonResponse.ResultStatus == "true") {
+
+                    AsyncStorage.setItem('Token', "", () => {
+                    });
+                    this.props.navigation.navigate('Login')
+                } else {
+                   
+
+                }
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT
+                });
+            })
+            .catch((error) => {
+            });
+
+
+    }
+    render() {
+
+
+        return (
+            <View style={{ flex: 1, backgroundColor: color.white }}>
+                <View style={{ height: hp('5%'), }} />
+
+                <View style={{ height: hp('15%'), }}>
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: hp('3%'), paddingBottom: hp('3%') }}>
+                        <Image source={require('./../../Asset/Images/logo.png')} style={{ height: hp('26%'), width: wp('60%'), resizeMode: 'contain' }} />
+                    </View>
+                </View>
+
+                <View style={{ flex: 1 }}>
+                    <TouchableWithoutFeedback>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            <View style={{ flex: 1 }}>
+                                <Image source={require('./../../Asset/Images/NeetSideBar.png')} style={{ height: hp('70%'), width: wp('100%'), position: 'absolute' }} />
+
+                                <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('Dashboard')} style={[drawerComponentStyle.View, { marginTop: hp('1%'), borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), borderTopColor: color.appGreen, borderTopWidth: wp('0.15%') }]}>
+                                    <View style={drawerComponentStyle.iconView}>
+                                        <Image source={require('./../../Asset/Icons/dashboard.png')} style={{ height: wp('5.5%'), width: wp('5.5%'), tintColor: color.appGreen }}></Image>
+                                    </View>
+                                    <View style={drawerComponentStyle.textView}>
+                                        <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Dashboard</Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('MyProfile')} style={[drawerComponentStyle.View, { borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), }]}>
+                                    <View style={drawerComponentStyle.iconView}>
+                                        <Image source={require('./../../Asset/Icons/profile.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                    </View>
+                                    <View style={drawerComponentStyle.textView}>
+                                        <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Profile</Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.onHideVisible : this.onHideVisible('TakeTest')} style={[drawerComponentStyle.View, { borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), }]}>
+                                    <View style={drawerComponentStyle.iconView}>
+                                        <Image source={require('./../../Asset/Icons/test1.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                    </View>
+                                    <View style={{ flex: 7.5, flexDirection: 'row', justifyContent: 'center' }}>
+                                        <View style={{ flex: 8, justifyContent: 'center' }}>
+                                            <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Take Test</Text>
+                                        </View>
+                                        <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+                                            {this.state.TakeTestView == false ?
+                                                <Image source={require('./../../Asset/Icons/caret-down.png')} style={{ height: wp('3.5%'), width: wp('3.5%'), tintColor: color.appGreen }}></Image>
+                                                :
+                                                <Image source={require('./../../Asset/Icons/sort-up.png')} style={{ height: wp('3.5%'), width: wp('3.5%'), tintColor: color.appGreen }}></Image>
+                                            }
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                                {this.state.TakeTestView == false ? null :
+                                    <View>
+                                        <View style={{ marginLeft: wp('3%') }}>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('ChapterTest')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/obook.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Chapter Test</Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('SubjectTest')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/book.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Subject Test</Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('AssessmentTest')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/notebook.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Assessment Test</Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('NEETModelTest')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/test1.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>NEET Model Test</Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                        </View>
+                                        <View style={{ borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), }}>
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('SpecialTest')} style={[drawerComponentStyle.View, { marginLeft: wp('3%') }]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/edit2.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Special Test</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                }
+
+                                <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.onHideVisible : this.onHideVisible('ViewTest')} style={[drawerComponentStyle.View, { borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), }]}>
+                                    <View style={drawerComponentStyle.iconView}>
+                                        <Image source={require('./../../Asset/Icons/test2.png')} style={{ height: wp('5.5%'), width: wp('5.5%'), tintColor: color.appGreen }}></Image>
+                                    </View>
+                                    <View style={{ flex: 7.5, flexDirection: 'row', justifyContent: 'center' }}>
+                                        <View style={{ flex: 8, justifyContent: 'center' }}>
+                                            <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>View Test Report</Text>
+                                        </View>
+                                        <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+                                            {this.state.ViewTestResultView == false ?
+                                                <Image source={require('./../../Asset/Icons/caret-down.png')} style={{ height: wp('3.5%'), width: wp('3.5%'), tintColor: color.appGreen }}></Image>
+                                                :
+                                                <Image source={require('./../../Asset/Icons/sort-up.png')} style={{ height: wp('3.5%'), width: wp('3.5%'), tintColor: color.appGreen }}></Image>
+                                            }
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+
+                                {this.state.ViewTestResultView == false ? null :
+                                    <View>
+                                        <View style={{ marginLeft: wp('3%') }}>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('ChapterTest_Reports')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/books-stack-of-three.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Chapter Test Reports</Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('SubjectTest_Reports')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/checklist.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Subject Test Reports</Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('AssessmentTest_Reports')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/test.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Assessment Test Reports</Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('NEETModelTest_Reports')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/icon.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>NEET Model Test Reports</Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('SpecialTest_Reports')} style={[drawerComponentStyle.View]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/open-magazine.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Special Test Report</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        <View style={{ borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), }}>
+                                            <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('Revise_Search')} style={[drawerComponentStyle.View, { marginLeft: wp('3%') }]}>
+                                                <View style={drawerComponentStyle.iconView}>
+                                                    <Image source={require('./../../Asset/Icons/question.png')} style={{ height: wp('6%'), width: wp('6%'), tintColor: color.appGreen }}></Image>
+                                                </View>
+                                                <View style={drawerComponentStyle.textView}>
+                                                    <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Revise Questions & Answers</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                }
+                                <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('Notification')} style={[drawerComponentStyle.View, { borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), }]}>
+                                    <View style={drawerComponentStyle.iconView}>
+                                        <Image source={require('./../../Asset/Icons/musical-bell-outline.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                    </View>
+                                    <View style={drawerComponentStyle.textView}>
+                                        <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Notification History</Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('ChangePassword')} style={[drawerComponentStyle.View, { borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), }]}>
+                                    <View style={drawerComponentStyle.iconView}>
+                                        <Image source={require('./../../Asset/Icons/key.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                    </View>
+                                    <View style={drawerComponentStyle.textView}>
+                                        <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Change Password</Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => this.props.skipDebounce ? this.props.navigateToScreen : this.navigateToScreen('Logout')} style={[drawerComponentStyle.View, { borderBottomColor: color.appGreen, borderBottomWidth: wp('0.15%'), }]}>
+                                    <View style={drawerComponentStyle.iconView}>
+                                        <Image source={require('./../../Asset/Icons/logout.png')} style={{ height: wp('5%'), width: wp('5%'), tintColor: color.appGreen }}></Image>
+                                    </View>
+                                    <View style={drawerComponentStyle.textView}>
+                                        <Text style={{ color: color.black, fontSize: fontSize.Small, fontFamily: fontFamily.OpenSansRegular }}>Logout</Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                            </View>
+                        </ScrollView>
+                    </TouchableWithoutFeedback>
+                </View>
+
+
+
+
+
+            </View>
+        )
+    }
+}
+DrawerComponent.propTypes = {
+    navigation: PropTypes.object
+};
+
+const mapStateToProps = (state) => {
+    return {
+        //  CommonReducer: state.CommonReducer
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        // LogoutAction: (Token, Latitude, Longitude, Device, IpAddress) => {
+        //     dispatch(LogoutAction(Token, Latitude, Longitude, Device, IpAddress));
+        // },
+        // Exports_Components: (Page_RouteName, ) => { dispatch(Exports_Components(Page_RouteName)); },
+
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(DrawerComponent);

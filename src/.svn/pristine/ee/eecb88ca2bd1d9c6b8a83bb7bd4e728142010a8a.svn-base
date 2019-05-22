@@ -1,0 +1,66 @@
+import { httpRequest } from '../../Asset/Utils/axios';
+import { Snackbar } from '../../Asset/Libraries/NpmList';
+import { Alert } from 'react-native';
+import {Invaliduser_Action} from './Invaliduser_Action'
+
+export function StartNeetModel_SaveAction(Token, TestDetailId) {
+    return (dispatch) => {
+        dispatch(getService())
+        return httpRequest({
+            data: JSON.stringify({
+                "Token": Token,
+                "TestDetailId": TestDetailId
+            }),
+            method: 'post',
+            url: 'question/neetmodeltest'
+        }).then((JsonResponse) => {
+
+            if (JsonResponse.ResultStatus == "true") {
+                var neetModelTestQuestions = JsonResponse.result
+              //  var TimeTaken = (JsonResponse.TimeTaken).split(":")
+                
+             //  TimeTaken_Seconds = (TimeTaken[0])*(1000*60*60) + (TimeTaken[1])*(1000*60) + (TimeTaken[2])*1000 
+              
+
+                dispatch(getServiceSuccess(neetModelTestQuestions))
+            }else if (JsonResponse.Message == "Invalid User") {
+             
+                Alert.alert(
+                    '',
+                    "Another device used, You have logged out",
+                    
+                    [
+                        { text: 'OK', onPress: () => dispatch(Invaliduser_Action()) },
+                    ],
+                    { cancelable: false }
+                )
+            } else {
+                dispatch(getServiceFailure())
+                Snackbar.show({
+                    title: JsonResponse.Message,
+                    duration: Snackbar.LENGTH_SHORT,
+                });
+            }
+
+        }).catch((error) => {
+
+            dispatch(getServiceFailure())
+        });
+    }
+}
+export function getService() {
+    return {
+        type: 'onSaveNeetModelTest',
+    }
+}
+export function getServiceSuccess(neetModelTestQuestions) {
+    return {
+        type: 'onSaveNeetModelTest_SUCCESS',
+        neetModelTestQuestions
+    }
+}
+export function getServiceFailure() {
+    return {
+        type: 'onSaveNeetModelTest_FAILURE',
+    }
+}

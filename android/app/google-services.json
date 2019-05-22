@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "140189044329",
+    "firebase_url": "https://crak-neet.firebaseio.com",
+    "project_id": "crak-neet",
+    "storage_bucket": "crak-neet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140189044329:android:bd00fea1544d64e2",
+        "android_client_info": {
+          "package_name": "com.neet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "140189044329-cfc30clokgim72veh6pdt0ecgij7pm1l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoA_uUzW1wppFnVLNWHDdVKhDrG0ksnzE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
